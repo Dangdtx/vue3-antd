@@ -79,7 +79,7 @@ export default defineComponent({
     })
 
     onMounted(async () => {
-      const BatteryManager: Battery = await navigator.getBattery()
+      const BatteryManager: Battery = await (navigator as any).getBattery()
       updateBattery(BatteryManager)
       console.log(BatteryManager, '电池')
 
