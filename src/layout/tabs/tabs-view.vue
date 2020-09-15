@@ -239,7 +239,6 @@ export default defineComponent({
   }
 
   .tabs-view-content {
-    overflow: auto;
     padding: 20px 14px 0;
     /*height: calc(100vh - #{$header-height});*/
     height: calc(100vh - 110px);

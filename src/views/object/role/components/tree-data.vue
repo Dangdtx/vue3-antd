@@ -2,6 +2,7 @@
   <div class="tree-wrapper">
     <a-tree
         block-node
+        :defaultSelectedKeys="selectedKeys"
         :tree-data="treeData"
         @select="onSelect"
     >
@@ -40,7 +41,7 @@ export default defineComponent({
   setup(props, context: SetupContext) {
     const {refreshTree} = useEventbus()
     const state = reactive({
-      selectedKeys: [],
+      selectedKeys: ['0'],
       treeData: [
         {
           title: '全部用户',
