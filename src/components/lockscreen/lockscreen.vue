@@ -1,36 +1,71 @@
 <template>
   <div class="lockscreen">
-    <div class="container">
-      <div class="number">{{ battery.level }}%</div>
-      <div class="contrast">
-        <div class="circle"></div>
-        <ul class="bubbles">
-          <li v-for="i in 15" :key="i"></li>
-        </ul>
+    <template v-if="!unLockLogin">
+      <div @click="unLockLogin = true" class="lock">
+        <lock-outlined/>
+        <unlock-outlined/>
       </div>
-      <div class="charging">
-        <div>{{batteryStatus}}</div>
-        <div v-show="Number.isFinite(battery.dischargingTime)">
-          剩余可使用时间：{{calcDischargingTime}}
+      <div class="container">
+        <div class="number">{{ battery.level }}%</div>
+        <div class="contrast">
+          <div class="circle"></div>
+          <ul class="bubbles">
+            <li v-for="i in 15" :key="i"></li>
+          </ul>
         </div>
-        <span v-show="Number.isFinite(battery.chargingTime) && battery.chargingTime != 0">
-          距离电池充满需要：{{calcDischargingTime}}
+        <div class="charging">
+          <div>{{ batteryStatus }}</div>
+          <div v-show="Number.isFinite(battery.dischargingTime)">
+            剩余可使用时间：{{ calcDischargingTime }}
+          </div>
+          <span v-show="Number.isFinite(battery.chargingTime) && battery.chargingTime != 0">
+          距离电池充满需要：{{ calcDischargingTime }}
         </span>
+        </div>
       </div>
-    </div>
+    </template>
+    <template v-if="unLockLogin">
+      <div class="login-box">
+        <a-avatar :size="128">
+          <template v-slot:icon>
+            <user-outlined />
+          </template>
+        </a-avatar>
+        <div class="username">admin</div>
+        <a-input-search
+            v-model:value="value"
+            placeholder="请输入登录密码"
+            size="large"
+            @search="onLogin"
+        >
+          <template v-slot:enterButton>
+            <arrow-right-outlined />
+          </template>
+        </a-input-search>
+        <router-link to="/login">忘记密码</router-link>
+        <router-link to="/login">重新登录</router-link>
+      </div>
+    </template>
     <div class="local-time">
       <div class="time">
-        {{ hour }}:{{minute}}
+        {{ hour }}:{{ minute }}
       </div>
       <div class="date">
-        {{month}}月{{day}}号，星期{{ week }}
+        {{ month }}月{{ day }}号，星期{{ week }}
       </div>
+    </div>
+    <div class="computer-status">
+      <wifi-outlined />
+      <api-outlined />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent, onMounted, reactive, toRefs, computed} from 'vue'
+import {Avatar} from 'ant-design-vue'
+import {LockOutlined, UnlockOutlined, UserOutlined,ApiOutlined, ArrowRightOutlined, WifiOutlined} from '@ant-design/icons-vue'
+
 import {useTime} from '@/hooks/useTime'
 
 interface Battery {
@@ -43,11 +78,13 @@ interface Battery {
 
 export default defineComponent({
   name: "lockscreen",
+  components: {LockOutlined, UnlockOutlined, UserOutlined,ArrowRightOutlined,ApiOutlined, WifiOutlined, [Avatar.name]: Avatar},
   setup() {
     // 获取本地时间
     const {month, day, hour, minute, second, week} = useTime()
 
     const state = reactive({
+      unLockLogin: false, // 是否解锁
       battery: {
         charging: false,
         chargingTime: 0,
@@ -76,7 +113,7 @@ export default defineComponent({
       if (state.battery.charging && state.battery.level >= 100) {
         return '已充满'
       } else if (state.battery.charging) {
-        return  '充电中'
+        return '充电中'
       } else {
         return '已断开电源'
       }
@@ -109,12 +146,17 @@ export default defineComponent({
       }
 
     })
+    // 登录
+    const onLogin = () => {
+      console.log('登录')
+    }
 
     return {
       ...toRefs(state),
-    month, day, hour, minute, second,week,
+      month, day, hour, minute, second, week,
       batteryStatus,
-      calcDischargingTime
+      calcDischargingTime,
+      onLogin
     }
   }
 })
@@ -132,6 +174,46 @@ export default defineComponent({
   color: white;
   overflow: hidden;
   z-index: 999999999;
+
+  .login-box {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    > * {
+      margin-bottom: 14px;
+    }
+
+    .username {
+      font-size: 30px;
+    }
+  }
+
+  .lock {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 34px;
+    cursor: pointer;
+
+    .anticon-unlock {
+      display: none;
+    }
+
+    &:hover .anticon-unlock {
+      display: initial;
+    }
+
+    &:hover .anticon-lock {
+      display: none;
+    }
+  }
 
   .container {
     position: relative;
@@ -218,14 +300,26 @@ export default defineComponent({
 
   .local-time {
     position: absolute;
-    bottom: 100px;
+    bottom: 60px;
     left: 60px;
     font-family: helvetica;
+
     .time {
       font-size: 70px;
     }
+
     .date {
       font-size: 40px;
+    }
+  }
+
+  .computer-status {
+    position: absolute;
+    bottom: 60px;
+    right: 60px;
+    font-size: 24px;
+    > * {
+      margin-left: 10px;
     }
   }
 }
