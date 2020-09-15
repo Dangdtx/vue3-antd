@@ -20,10 +20,10 @@
     </div>
     <div class="local-time">
       <div class="time">
-        12:30
+        {{ hour }}:{{minute}}
       </div>
       <div class="date">
-        9月16号，星期三
+        {{month}}月{{day}}号，星期{{ week }}
       </div>
     </div>
   </div>
@@ -31,6 +31,7 @@
 
 <script lang="ts">
 import {defineComponent, onMounted, reactive, toRefs, computed} from 'vue'
+import {useTime} from '@/hooks/useTime'
 
 interface Battery {
   charging: boolean; // 当前电池是否正在充电
@@ -43,6 +44,9 @@ interface Battery {
 export default defineComponent({
   name: "lockscreen",
   setup() {
+    // 获取本地时间
+    const {month, day, hour, minute, second, week} = useTime()
+
     const state = reactive({
       battery: {
         charging: false,
@@ -108,6 +112,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+    month, day, hour, minute, second,week,
       batteryStatus,
       calcDischargingTime
     }
