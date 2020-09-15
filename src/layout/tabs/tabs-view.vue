@@ -101,7 +101,7 @@ interface RouteItem {
 export default defineComponent({
   name: "tabs-view",
   components: {
-    ...components, Transition
+    ...components
   },
   setup() {
     const route = useRoute()
