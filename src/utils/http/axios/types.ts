@@ -14,6 +14,8 @@ export interface RequestOptions {
   formatDate?: boolean;
   //  是否处理请求结果
   isTransformRequestResult?: boolean;
+  // 是否解析成JSON
+  isParseToJson?: boolean;
   // 是否加入url
   joinPrefix?: boolean;
   // 接口地址， 不填则使用默认apiUrl

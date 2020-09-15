@@ -11,7 +11,18 @@
             <span>{{ group.meta.title }}</span>
           </template>
           <template v-for="menu in group.children">
-            <a-menu-item v-if="!menu.meta.hidden" :key="group.path + '/' + menu.path">
+            <a-sub-menu v-if="menu.meta.isGroup" :key="group.path + '/' + menu.path">
+              <template v-slot:title>
+                <component :is="menu.meta?.icon"/>
+                <span class="nav-text">{{ menu.meta.title }}</span>
+              </template>
+              <template v-for="item in menu.children">
+                <a-menu-item v-if="!item.meta.hidden" :key="group.path + '/' + menu.path + '/' + item.path">
+                  <span class="nav-text">{{ item.meta.title }}</span>
+                </a-menu-item>
+              </template>
+            </a-sub-menu>
+            <a-menu-item v-if="!menu.meta.hidden && !menu.meta.isGroup" :key="group.path + '/' + menu.path">
               <component :is="menu.meta?.icon"/>
               <span class="nav-text">{{ menu.meta.title }}</span>
             </a-menu-item>
@@ -23,7 +34,7 @@
 
 <script lang="ts">
 import {defineComponent, ref, unref, watch, SetupContext } from 'vue'
-import {MenuFoldOutlined, UserOutlined, TeamOutlined, HomeOutlined, DesktopOutlined, SettingOutlined, ApartmentOutlined, EditOutlined} from '@ant-design/icons-vue';
+import antIcons from './ant-icons'
 import {message} from 'ant-design-vue'
 
 import router from "@/router/";
@@ -42,28 +53,27 @@ export default defineComponent({
     }
   },
   components: {
-    message,
-    UserOutlined,
-    SettingOutlined,
-    HomeOutlined,
-    MenuFoldOutlined,
-    DesktopOutlined,
-    ApartmentOutlined,
-    EditOutlined,
-    TeamOutlined
+    ...antIcons
   },
   setup(props: Props, context: SetupContext ) {
     const route = useRoute()
-    console.log(route)
+
+    // 获取打开的子菜单
+    const getOpenKeys = () => {
+      return route.meta.isGroup ? route.matched.slice(1, 3).map(item => item.path) : [route.matched[1].path]
+    }
+
     const routes = router.getRoutes().find(item => item.path === '/')?.children || []
-    const openKeys = ref([route.matched[1].path])
+    const openKeys = ref(getOpenKeys())
     const preOpenKeys = ref(unref(openKeys))
     const selectedKeys = ref([route.path])
 
     const clickMenuItem = (menuItem: any) => {
       router.push(menuItem.key)
     }
-    const onOpenChange = (openKey: Array<string>) => openKeys.value = openKey.slice(-1)
+    const onOpenChange = (openKey: Array<string>) => {
+      // openKeys.value = getOpenKeys()
+    }
 
     watch(() => props.collapsed, (newVal) => {
       console.log(newVal, preOpenKeys)
@@ -71,7 +81,7 @@ export default defineComponent({
     })
 
     watch(() => route.fullPath, () => {
-      openKeys.value = [route.matched[1].path]
+      openKeys.value = getOpenKeys()
       selectedKeys.value = [route.path]
     })
 

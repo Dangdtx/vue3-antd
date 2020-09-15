@@ -2,11 +2,10 @@
   <div class="tree-wrapper">
     <a-tree
         blockNode
+        :defaultSelectedKeys="selectedKeys"
         v-model:expanded-keys="expandedKeys"
         :auto-expand-parent="autoExpandParent"
-        :defaultSelectedKeys="selectedKeys"
         :tree-data="treeData"
-        :load-data="onLoadData"
         @expand="onExpand"
         @select="onSelect"
     >
@@ -17,7 +16,7 @@
           {{ node.title.substr(node.title.indexOf(searchValue) + searchValue.length) }}
         </span>
         <span v-else>{{ node.title }}</span>
-        <operate-row v-if="!hideOperate" @delete="deleteRow(node)" :hide-edit="true" @add="addRow(node)" @edit="editRow(node)"/>
+        <operate-row v-if="!hideOperate" @delete="deleteRow(node)" :hide-del="getPosLength(node) < 3" :hide-edit="getPosLength(node) < 3" @add="addRow(node)" @edit="editRow(node)"/>
       </template>
     </a-tree>
   </div>
@@ -25,12 +24,12 @@
 
 <script lang="ts">
 import {message, Tree} from 'ant-design-vue'
-import {defineComponent, toRefs, SetupContext, reactive, onMounted, nextTick, unref} from 'vue'
+import {defineComponent, toRefs, SetupContext, reactive, onMounted, unref} from 'vue'
 
 import {useDeptNew} from './modals/useModals'
 import {OperateRow} from '@/components/operate-row'
 
-import {deptDel, deptTree} from '@/api/dept'
+import {watermarkGroup, watermarkDel, watermarkUsers} from '@/api/watermark'
 import {useRoute, useRouter} from "vue-router";
 import {useEventbus} from "@/hooks/useEventbus";
 
@@ -43,8 +42,8 @@ interface TreeItem {
 }
 
 export default defineComponent({
-  name: 'dept-tree',
-  emits: ['selected'],
+  name: 'watermark-tree',
+  emits: ['selected', 'selected-node'],
   props: {
     hideOperate: { // 隐藏操作栏
       type: Boolean,
@@ -53,8 +52,8 @@ export default defineComponent({
     rootTreeOption: { // 根树配置
       type: Object,
       default: () => ({
-        title: '公司',
-        key: '1'
+        title: '全局组',
+        key: '0'
       })
     }
   },
@@ -68,13 +67,13 @@ export default defineComponent({
     const state = reactive({
       expandedKeys: [props.rootTreeOption.key],
       autoExpandParent: true,
-      checkedKeys: [],
-      selectedKeys: [props.rootTreeOption.key],
+      checkedKeys: ['0'],
+      selectedKeys: ['0'],
       searchValue: '',
       treeData: [
         {
-          title: '公司',
-          key: '1',
+          title: '全局组',
+          key: '0',
           scopedSlots: {title: 'title'},
           children: [],
           ...props.rootTreeOption
@@ -82,34 +81,43 @@ export default defineComponent({
       ],
     })
 
+    // 获取节点层级
+    const getPosLength = (node): number => node.pos.split('-').length
+
     // 获取部门树
     const getDeptTree = async (fatherId: string | number) => {
       const param = {
-        ID: fatherId
+        gid: fatherId
       }
-      const data = await deptTree(param)
-      return data.filter(n => n.id != 1).map(item => {
+      const data = await watermarkUsers(param)
+      return data.map(item => {
         return {
-          title: item.dname.toString(),
+          title: item.groudname.toString(),
           key: item.id.toString(),
-          scopedSlots: {title: 'title'},
-          treeInfo: item
+          scopedSlots: {title: 'title'}
         }
       })
     }
 
     // 初始化树
     const initDeptTree = async () => {
-      state.treeData[0].children = await getDeptTree(state.treeData[0].key)
+      const data = await watermarkGroup({})
+      state.treeData[0].children = data.map(item => {
+        return {
+          title: item.groudname.toString(),
+          key: item.id.toString(),
+          scopedSlots: {title: 'title'}
+        }
+      })
       state.autoExpandParent = false
     }
 
     onMounted(() => {
       refreshTree(() => {
         // todo
-        // router.push({
-        //   path: '/redirect' + unref(route).fullPath,
-        // })
+        router.push({
+          path: '/redirect' + unref(route).fullPath,
+        })
       })
       initDeptTree()
     })
@@ -122,7 +130,7 @@ export default defineComponent({
           return;
         }
         (async () => {
-          treeNode.dataRef.children = await getDeptTree(treeNode.eventKey).finally(() => resolve())
+          treeNode.dataRef.children = await getDeptTree(treeNode.eventKey)
           return resolve();
         })()
         // state.treeData = [...state.treeData];
@@ -143,12 +151,13 @@ export default defineComponent({
     const onSelect = (selectedKeys: any, info: any) => {
       const {node} = info
       context.emit('selected', node.eventKey.toString())
+      context.emit('selected-node', node)
       state.selectedKeys = selectedKeys;
     }
 
     // 删除行
     const deleteRow = async (node) => {
-      const res = await deptDel({deptID: node.eventKey})
+      const res = await watermarkDel({gid: node.eventKey})
       if (res.Code == 1) {
         message.success('删除成功')
         initDeptTree()
@@ -162,13 +171,14 @@ export default defineComponent({
     }
     // 编辑行
     const editRow = (node) => {
-      console.log(node)
+      useDeptNew({fatherId: node.eventKey})
     }
 
     return {
       ...toRefs(state),
       onCheck,
       onSelect,
+      getPosLength,
       onExpand,
       onLoadData,
       deleteRow,

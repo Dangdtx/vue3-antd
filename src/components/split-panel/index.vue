@@ -72,6 +72,7 @@ export default defineComponent({
   background-color: white;
 
   .scalable {
+    overflow: auto;
     position: relative;
     min-width: 100px;
     width: 240px;
