@@ -82,6 +82,8 @@ export default defineComponent({
   components: {[Card.name]: Card, [Col.name]: Col, [Row.name]: Row, [InputNumber.name]: InputNumber},
   setup() {
     const domWidth = useDomWidth()
+// 不用进行true false转换的key
+    const exclusive = ['Xlsbackdays', 'TrayLoadTime', 'LimitTime']
 
     const state = reactive({
       formInline: {
@@ -108,15 +110,16 @@ export default defineComponent({
     onMounted(async () => {
       const data = await sysConfig({})
       for (const key in data) {
-        state.formInline[key] = data[key] == 1
+        if (!exclusive.includes(key)) {
+          state.formInline[key] = data[key] == 1
+        }
       }
     })
 
     // 保存修改
     const saveChange = async () => {
       const params = {}
-      // 不用进行true false转换的key
-      const exclusive = ['Xlsbackdays', 'TrayLoadTime', 'LimitTime']
+
       for (const key in state.formInline) {
         if (exclusive.includes(key)) {
           params[key] = state.formInline[key]
