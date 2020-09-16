@@ -4,10 +4,10 @@
       {{treeTitle}}--{{tableTitle}}
     </a-form-item>
     <a-form-item label="水印颜色">
-      <input v-model="form.color" type="color"/>
+      <input v-model="form.fontcolor" type="color"/>
     </a-form-item>
     <a-form-item label="水印字体">
-      <a-select v-model:value="form.font" placeholder="请选择字体">
+      <a-select v-model:value="form.fontname" placeholder="请选择字体">
         <a-select-option v-for="item in fontSelectedOptions" :key="item.label" :value="item.label">
           <span :style="{fontFamily: item.fontFamily}">{{ item.label }}</span>
         </a-select-option>
@@ -16,28 +16,28 @@
     <a-form-item label="字体大小">
       <a-row>
         <a-col :span="10">
-          <a-slider v-model:value="form.fontSize" :min="0" :max="40"/>
+          <a-slider v-model:value="form.fontsize" :min="0" :max="40"/>
         </a-col>
         <a-col :span="8">
           <a-input-number
-              v-model:value="form.fontSize"
+              v-model:value="form.fontsize"
               :formatter="value => `${value}px`"
               :parser="value => value.replace('px', '')"
               :min="1" :max="40" style="marginLeft: 16px"/>
         </a-col>
         <a-col :span="6">
-          <a-checkbox v-model:checked="form.fontAutoSize">自动</a-checkbox>
+          <a-checkbox v-model:checked="form.auto">自动</a-checkbox>
         </a-col>
       </a-row>
     </a-form-item>
-    <a-form-item label="透明度">
+    <a-form-item v-if="route.meta.watermarkType == 'docmark'" label="透明度">
       <a-row>
         <a-col :span="10">
-          <a-slider v-model:value="form.transparent" :min="0" :max="100"/>
+          <a-slider v-model:value="form.diaphaneity" :min="0" :max="100"/>
         </a-col>
         <a-col :span="4">
           <a-input-number
-              v-model:value="form.transparent"
+              v-model:value="form.diaphaneity"
               :formatter="value => `${value}%`"
               :parser="value => value.replace('%', '')"
               :min="0" :max="100" style="marginLeft: 16px"/>
@@ -63,15 +63,15 @@
             </a-col>
           </a-row>
         </a-checkbox-group>
-        <a-row>
+        <a-row v-if="route.meta.watermarkType == 'docmark'">
           <a-col :span="6">
             水印条数：
           </a-col>
           <a-col :span="10">
-            <a-slider v-model:value="form.items" :min="1" :max="5"/>
+            <a-slider v-model:value="form.tiaoshu" :min="1" :max="5"/>
           </a-col>
           <a-col :span="4">
-            <a-input-number v-model:value="form.items" :min="1" :max="5" style="marginLeft: 16px"/>
+            <a-input-number v-model:value="form.tiaoshu" :min="1" :max="5" style="marginLeft: 16px"/>
           </a-col>
         </a-row>
         <div>
@@ -99,7 +99,7 @@ import {
   fontSelectedOptions
 } from './options'
 
-import {watermarkSetdm, watermarkFileMark, watermarkDocMark} from '@/api/watermark'
+import {watermarkSetdm, watermarkSetfm,watermarkFileMark, watermarkDocMark} from '@/api/watermark'
 
 export default defineComponent({
   name: 'watermark-info',
@@ -122,42 +122,47 @@ export default defineComponent({
       isShowDescription: false, // 是否展开
       checkeds: [], // 复选框
       form: {
-        color: '#ff0000',
-        font: '宋体',
-        fontAutoSize: true,
-        fontSize: 0,
+        // id: 0,
+        groudid: 1,
+        userid: 0,
+        fontcolor: '#ff0000' as string | number,
+        fontname: '宋体',
+        auto: true as boolean | number,
+        fontsize: 0,
         layout: '3',
-        transparent: 0,
+        diaphaneity: 0,
         text: 'Default',
-        option: 0,
-        items: 0,
-        proc: ''
+        options: 0,
+        tiaoshu: 0,
+        proc: '',
       }
     })
 
     const sumOption = (): number => {
-      let option = state.form.text.length > 0 ? 16 : 0
-      state.checkeds.forEach(item => (option += parseInt(item)))
-      return option
+      let options = state.form.text.length > 0 ? 16 : 0
+      state.checkeds.forEach(item => (options += parseInt(item)))
+      return options
     }
 
     // 保存修改
     const saveChange = () => {
       const params = {...state.form}
-      params.color = params.color.replace('#', '')
-      params.option = sumOption()
-      watermarkSetdm({record: params})
+      params.fontcolor = parseInt((params.fontcolor as string).replace('#', '0x'), 16)
+      params.options = sumOption()
+      params.auto = params.auto ? 1 : 0
+      route.meta.watermarkType == 'filemark' ? watermarkSetfm(params) : watermarkSetdm( params)
     }
 
     // 监听传过来的gid
     watch(() => props.gid, value => {
+      state.form.groudid = ~~props.gid
       // 打印水印
       if (route.meta.watermarkType == 'filemark') {
-        watermarkFileMark({gid: value})
+        watermarkFileMark({gid: value, uid: 0})
       } else {
-        watermarkDocMark({gid: value})
+        watermarkDocMark({gid: value, uid: 0})
       }
-    })
+    }, {immediate: true})
     // 监听传过来的gid
     watch(() => route.fullPath, value => {
       console.log(route.meta.watermarkType)
@@ -165,6 +170,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      route,
       styleSelectedOptions,
       checkBoxs,
       fontSelectedOptions,

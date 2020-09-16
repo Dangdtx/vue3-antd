@@ -79,7 +79,7 @@
 
 <script lang="ts">
 
-import {defineComponent, ref, toRefs, reactive, onMounted} from 'vue'
+import {defineComponent, ref, toRefs, reactive} from 'vue'
 import {ModalProps} from './props'
 import {useEventbus} from "@/hooks/useEventbus";
 import {deptTree} from "@/api/dept";

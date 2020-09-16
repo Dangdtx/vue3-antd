@@ -35,7 +35,7 @@ import {message, Tree} from 'ant-design-vue'
 import {defineComponent, toRefs, SetupContext, reactive, onMounted} from 'vue'
 import {OperateRow} from '@/components/operate-row'
 
-import { usePolicyOperation} from "@/views/tactics/template/modals/useModals"
+import {usePolicyOperation} from "@/views/tactics/template/modals/useModals"
 import {
   policyAdd,
   policySet,
@@ -52,6 +52,7 @@ interface TreeItem {
   key: string | number;
   children?: TreeItem[];
   scopedSlots?: object;
+
   [propName: string]: any;
 }
 
@@ -228,8 +229,7 @@ export default defineComponent({
         usePolicyOperation({
           title: '策略名称',
           label: '策略名称',
-          reqMethod:
-          policyAdd,
+          reqMethod: policyAdd,
           callback: (res: any): void => {
             if (res.Code == 1) initData()
           }

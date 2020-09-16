@@ -7,7 +7,7 @@
     </span>
       <a-breadcrumb>
         <a-breadcrumb-item v-for="routeItem in route.matched" :key="routeItem.name">
-          <router-link :to="routeItem.path">{{ routeItem.meta.title }}</router-link>
+          <a>{{ routeItem.meta.title }}</a>
           <template v-slot:overlay>
             <a-menu v-if="routeItem.children.length">
               <template v-for="childItem in routeItem.children">

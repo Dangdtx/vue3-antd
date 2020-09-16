@@ -87,7 +87,8 @@ export default defineComponent({
     // 获取部门树
     const getDeptTree = async (fatherId: string | number) => {
       const param = {
-        gid: fatherId
+        gid: fatherId,
+        uid: 0
       }
       const data = await watermarkUsers(param)
       return data.map(item => {

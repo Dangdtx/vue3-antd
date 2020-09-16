@@ -8,6 +8,7 @@ enum Api {
     watermarkDocMark = '/watermark/docmark', // 获取打印水印配置
     watermarkNew = '/watermark/new', // 新建水印组
     watermarkSetdm = '/watermark/setdm', // 设置文档水印
+    watermarkSetfm = '/watermark/setfm', // 设置打印水印
     watermarkDel = '/watermark/del', // 删除水印组
 }
 
@@ -61,6 +62,22 @@ export function watermarkNew(params: any) {
         params,
     }, {
         isTransformRequestResult: false
+    });
+}
+/**
+ * @description: 设置文档水印
+ */
+export function watermarkSetfm(params: any) {
+    return http.request({
+        url: Api.watermarkSetfm,
+        method: 'POST',
+        params,
+        headers: {
+            'Content-type': ContentTypeEnum.JSON
+        }
+    }, {
+        isTransformRequestResult: false,
+        isParseToJson: true
     });
 }
 /**

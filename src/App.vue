@@ -1,31 +1,33 @@
 <template>
-  <config-provider v-if="lockTime > 0" :locale="zhCN">
+  <config-provider v-show="lockTime > 0 || unLockLogin" :locale="zhCN">
     <router-view v-slot="{ Component }">
       <transition name="zoom-fade">
         <component :is="Component" />
       </transition>
     </router-view>
   </config-provider>
-  <lock-screen v-if="lockTime <= 0" />
+  <lock-screen v-model:un-lock-login="unLockLogin" v-model:lock-time="lockTime" v-if="lockTime <= 0 || unLockLogin" />
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, ref} from 'vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
 import {ConfigProvider} from 'ant-design-vue'
 import {LockScreen} from '@/components/lockscreen'
-import {useUserLeave} from '@/hooks/useUserLeave'
+import {useUserLeave} from '@/hooks/useUserStatus'
 
 export default defineComponent({
   name: 'App',
   components: {ConfigProvider, LockScreen},
   setup() {
 
+    const unLockLogin = ref(false)
     const {lockTime} = useUserLeave()
 
     return {
       zhCN,
-      lockTime
+      lockTime,
+      unLockLogin
     }
   }
 });

@@ -1,7 +1,8 @@
 <template>
-  <div class="lockscreen">
+  <div @keyup="$emit('update:un-lock-login',true)" @mousedown.stop @contextmenu.prevent :class="{unLockLogin}"
+       class="lockscreen">
     <template v-if="!unLockLogin">
-      <div @click="unLockLogin = true" class="lock">
+      <div @click="$emit('update:un-lock-login',true)" class="lock">
         <lock-outlined/>
         <unlock-outlined/>
       </div>
@@ -15,7 +16,7 @@
         </div>
         <div class="charging">
           <div>{{ batteryStatus }}</div>
-          <div v-show="Number.isFinite(battery.dischargingTime)">
+          <div v-show="Number.isFinite(battery.dischargingTime) && battery.dischargingTime != 0">
             剩余可使用时间：{{ calcDischargingTime }}
           </div>
           <span v-show="Number.isFinite(battery.chargingTime) && battery.chargingTime != 0">
@@ -28,45 +29,60 @@
       <div class="login-box">
         <a-avatar :size="128">
           <template v-slot:icon>
-            <user-outlined />
+            <user-outlined/>
           </template>
         </a-avatar>
         <div class="username">admin</div>
         <a-input-search
-            v-model:value="value"
+            v-model:value="loginForm.password"
+            type="password"
             placeholder="请输入登录密码"
             size="large"
             @search="onLogin"
         >
           <template v-slot:enterButton>
-            <arrow-right-outlined />
+            <arrow-right-outlined/>
           </template>
         </a-input-search>
-        <router-link to="/login">忘记密码</router-link>
-        <router-link to="/login">重新登录</router-link>
+        <a @click="nav2login">忘记密码</a>
+        <a @click="nav2login">重新登录</a>
       </div>
     </template>
-    <div class="local-time">
-      <div class="time">
-        {{ hour }}:{{ minute }}
+    <template v-if="!unLockLogin">
+      <div class="local-time">
+        <div class="time">
+          {{ hour }}:{{ minute }}
+        </div>
+        <div class="date">
+          {{ month }}月{{ day }}号，星期{{ week }}
+        </div>
       </div>
-      <div class="date">
-        {{ month }}月{{ day }}号，星期{{ week }}
+      <div class="computer-status">
+      <span :class="{offline: !online}" class="network">
+        <wifi-outlined class="network"/>
+      </span>
+        <api-outlined/>
       </div>
-    </div>
-    <div class="computer-status">
-      <wifi-outlined />
-      <api-outlined />
-    </div>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent, onMounted, reactive, toRefs, computed} from 'vue'
 import {Avatar} from 'ant-design-vue'
-import {LockOutlined, UnlockOutlined, UserOutlined,ApiOutlined, ArrowRightOutlined, WifiOutlined} from '@ant-design/icons-vue'
+import {
+  LockOutlined,
+  UnlockOutlined,
+  UserOutlined,
+  ApiOutlined,
+  ArrowRightOutlined,
+  WifiOutlined
+} from '@ant-design/icons-vue'
 
+import {useRouter} from "vue-router";
+import {useUserOnline} from '@/hooks/useUserStatus'
 import {useTime} from '@/hooks/useTime'
+import {setIsLock} from '@/hooks/useUserStatus'
 
 interface Battery {
   charging: boolean; // 当前电池是否正在充电
@@ -78,13 +94,37 @@ interface Battery {
 
 export default defineComponent({
   name: "lockscreen",
-  components: {LockOutlined, UnlockOutlined, UserOutlined,ArrowRightOutlined,ApiOutlined, WifiOutlined, [Avatar.name]: Avatar},
-  setup() {
+  props: {
+    unLockLogin: {// 是否解锁
+      type: Boolean,
+      default: false
+    },
+    lockTime: {
+      type: Number,
+      default: 0
+    }
+  },
+  components: {
+    LockOutlined,
+    UnlockOutlined,
+    UserOutlined,
+    ArrowRightOutlined,
+    ApiOutlined,
+    WifiOutlined,
+    [Avatar.name]: Avatar
+  },
+  setup(props, {emit}) {
     // 获取本地时间
     const {month, day, hour, minute, second, week} = useTime()
+    const {online} = useUserOnline()
+
+    const router = useRouter()
 
     const state = reactive({
-      unLockLogin: false, // 是否解锁
+      loginForm: {
+        username: localStorage.getItem('username') ?? 'admin',
+        password: '',
+      },
       battery: {
         charging: false,
         chargingTime: 0,
@@ -120,7 +160,7 @@ export default defineComponent({
     })
 
     onMounted(async () => {
-      const BatteryManager: Battery = await (navigator as any).getBattery()
+      const BatteryManager: Battery = await (window.navigator as any).getBattery()
       updateBattery(BatteryManager)
       console.log(BatteryManager, '电池')
 
@@ -146,17 +186,29 @@ export default defineComponent({
       }
 
     })
+
     // 登录
     const onLogin = () => {
       console.log('登录')
+      emit('update:un-lock-login', false)
+      emit('update:lock-time', 60 * 10)
+      setIsLock(false)
+    }
+
+    const nav2login = () => {
+      emit('update:un-lock-login', false)
+      emit('update:lock-time', 60 * 10)
+      router.push('/login')
     }
 
     return {
       ...toRefs(state),
+      online,
       month, day, hour, minute, second, week,
       batteryStatus,
       calcDischargingTime,
-      onLogin
+      onLogin,
+      nav2login
     }
   }
 })
@@ -173,7 +225,12 @@ export default defineComponent({
   background: #000;
   color: white;
   overflow: hidden;
-  z-index: 999999999;
+  z-index: 9999999;
+
+  &.unLockLogin {
+    background-color: rgba(25, 28, 34, 0.88);
+    backdrop-filter: blur(20px);
+  }
 
   .login-box {
     position: absolute;
@@ -318,8 +375,25 @@ export default defineComponent({
     bottom: 60px;
     right: 60px;
     font-size: 24px;
+
     > * {
-      margin-left: 10px;
+      margin-left: 14px;
+    }
+
+    .network {
+      position: relative;
+
+      &.offline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 2px;
+        height: 28px;
+        transform: translate(-50%, -50%) rotate(45deg);
+        background-color: red;
+        z-index: 10;
+      }
     }
   }
 }

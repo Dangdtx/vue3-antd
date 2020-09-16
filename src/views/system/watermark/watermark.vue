@@ -28,7 +28,7 @@ export default defineComponent({
       selectedDeptId: '0',
       treeTitle: '全局组',
       tableTitle: '',
-      gid: ''
+      gid: '0'
     })
 
     // 选择的水印组id

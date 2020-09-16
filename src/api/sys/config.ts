@@ -25,11 +25,11 @@ export function sysSetconfig(params) {
     url: Api.sysSetconfig,
     method: 'POST',
     headers: {
-      'Content-type': ContentTypeEnum.JSON
+      // 'Content-type': ContentTypeEnum.TEXT
     },
     params,
   }, {
-    isParseToJson: true,
+    isParseToJson: false,
     isTransformRequestResult: false
   });
 }

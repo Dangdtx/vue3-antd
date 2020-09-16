@@ -20,10 +20,11 @@ export const usePolicyOperation = (props: ModalProps, callback?: (param: any) =>
     if (!ModalComponentInstance) {
         ModalComponentInstance = createApp({
             setup() {
-                return () => h(ModalComponent, {
-                    ...props,
-                    onCallback: (param) => callback && callback(param)
-                } )
+                return () => h(ModalComponent)
+                // return () => h(ModalComponent, {
+                //     ...props,
+                //     onCallback: (param) => callback && callback(param)
+                // } )
             }
         })
         wrapperEl = document.createElement('div')

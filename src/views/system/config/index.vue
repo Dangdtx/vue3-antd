@@ -1,13 +1,13 @@
 <template>
   <a-card title="系统配置">
     <template v-if="domWidth <= 1314" v-slot:extra>
-        <a-button
-            type="primary"
-            :loading="loading"
-            @click="saveChange"
-        >
-          保存修改
-        </a-button>
+      <a-button
+          type="primary"
+          :loading="loading"
+          @click="saveChange"
+      >
+        保存修改
+      </a-button>
     </template>
     <a-row :gutter="[16,16]">
       <a-col v-for="(value, key) in configOptions" :span="8" :key="key">
@@ -94,25 +94,24 @@ export default defineComponent({
         DecryMe: false,
         EncryBackup: false,
         FileBackup: false,
-        LimitTime: false,
         NeedReson: false,
         OfflineDecryAll: false,
         ServerJG: false,
         AskWhenDel: false,
         SystemConfig: false,
-        TrayLoadTime: false,
         TrustAll: false,
-        Xlsbackdays: false
+        TrayLoadTime: 0,
+        LimitTime: 0,
+        Xlsbackdays: 0
       },
       loading: false
     })
 
     onMounted(async () => {
+      // 获取配置信息
       const data = await sysConfig({})
       for (const key in data) {
-        if (!exclusive.includes(key)) {
-          state.formInline[key] = data[key] == 1
-        }
+        state.formInline[key] = exclusive.includes(key) ? data[key] : data[key] == 1
       }
     })
 
@@ -122,12 +121,12 @@ export default defineComponent({
 
       for (const key in state.formInline) {
         if (exclusive.includes(key)) {
-          params[key] = state.formInline[key]
+          params[key] = state.formInline[key] + ''
         } else {
-          params[key] = state.formInline[key] ? 1 : 0
+          params[key] = state.formInline[key] ? 1 + '' : 0 + ''
         }
       }
-      const result = await sysSetconfig({config: params})
+      const result = await sysSetconfig({config: JSON.stringify(params)})
       if (result.Code == 1) {
         message.success('配置成功')
       } else {
