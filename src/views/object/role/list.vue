@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
+import {defineComponent, provide, ref} from 'vue';
 
 import SplitPanel from '@/components/split-panel/index.vue'
 

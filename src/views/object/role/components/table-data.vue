@@ -99,7 +99,7 @@ export default defineComponent({
     const getTableData = async (id) => {
       state.loading = true
       const data = await props.getDataMethod({type: id}, id).finally(() => state.loading = false)
-      console.log(data, '哈哈哈哈')
+      console.log(data, '表格数据')
       state.dataList = data
     }
 

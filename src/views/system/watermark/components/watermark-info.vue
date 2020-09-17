@@ -1,7 +1,7 @@
 <template>
   <a-form :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
     <a-form-item label="当前组">
-      {{treeTitle}}--{{tableTitle}}
+      {{ treeTitle }}--{{ tableTitle }}
     </a-form-item>
     <a-form-item label="水印颜色">
       <input v-model="form.fontcolor" type="color"/>
@@ -46,7 +46,7 @@
     </a-form-item>
     <a-form-item label="显示样式">
       <a-radio-group v-model:value="form.layout">
-        <a-radio v-for="(value, key) in styleSelectedOptions" :key="key" :value="key">
+        <a-radio v-for="(value, key) in styleSelectedOptions" :key="key" :value="~~key">
           {{ value }}
         </a-radio>
       </a-radio-group>
@@ -57,7 +57,7 @@
         <a-checkbox-group v-model:value="checkeds" style="display: block;margin-bottom: 10px">
           <a-row>
             <a-col v-for="(value, key) in checkBoxs" :key="key" :span="10">
-              <a-checkbox :value="key">
+              <a-checkbox :value="~~key">
                 {{ value }}
               </a-checkbox>
             </a-col>
@@ -91,7 +91,7 @@
 <script lang="ts">
 import {defineComponent, reactive, toRefs, watch} from 'vue';
 import {useRoute} from "vue-router";
-import {Select, Slider, InputNumber, Col, Row, Input} from 'ant-design-vue'
+import {Select, Slider, InputNumber, Col, Row, Input, message} from 'ant-design-vue'
 
 import {
   styleSelectedOptions,
@@ -99,7 +99,23 @@ import {
   fontSelectedOptions
 } from './options'
 
-import {watermarkSetdm, watermarkSetfm,watermarkFileMark, watermarkDocMark} from '@/api/watermark'
+import {watermarkSetdm, watermarkSetfm, watermarkFileMark, watermarkDocMark} from '@/api/watermark'
+
+// 默认的配置
+const presetForm = {
+  groudid: 1,
+  userid: 0,
+  fontcolor: '#000000' as string | number,
+  fontname: '宋体',
+  auto: true as boolean | number,
+  fontsize: 0,
+  layout: 3,
+  diaphaneity: 0,
+  text: 'Default',
+  options: 0,
+  tiaoshu: 0,
+  proc: '',
+}
 
 export default defineComponent({
   name: 'watermark-info',
@@ -112,7 +128,7 @@ export default defineComponent({
     [Col.name]: Col,
     [Input.TextArea.name]: Input.TextArea
   },
-  props: ['treeTitle', 'tableTitle', 'gid'],
+  props: ['treeTitle', 'tableTitle', 'gid', 'uid'],
   setup(props) {
     const route = useRoute()
 
@@ -122,19 +138,7 @@ export default defineComponent({
       isShowDescription: false, // 是否展开
       checkeds: [], // 复选框
       form: {
-        // id: 0,
-        groudid: 1,
-        userid: 0,
-        fontcolor: '#ff0000' as string | number,
-        fontname: '宋体',
-        auto: true as boolean | number,
-        fontsize: 0,
-        layout: '3',
-        diaphaneity: 0,
-        text: 'Default',
-        options: 0,
-        tiaoshu: 0,
-        proc: '',
+        ...presetForm
       }
     })
 
@@ -144,29 +148,65 @@ export default defineComponent({
       return options
     }
 
+    // 查询水印配置信息
+    const queryWatermarkConfig = async () => {
+      let data: any
+      // 打印水印
+      if (route.meta.watermarkType == 'filemark') {
+        data = await watermarkFileMark({gid: state.form.groudid, uid: state.form.userid})
+      } else {
+        data = await watermarkDocMark({gid: state.form.groudid, uid: state.form.userid})
+      }
+      console.log(data, '水印设置信息')
+      if (data.Code == 1) {
+        const {result} = data
+        state.form = {
+          ...state.form,
+          ...result.wmconfig
+        }
+        state.form.auto = result.wmconfig.auto == 1
+        state.form.fontcolor = ('#' + (result.wmconfig.fontcolor).toString(16)).padEnd(7, '0')
+        state.checkeds = result.array
+      } else {
+        message.info('该组或用户尚未设置水印')
+        // state.form = {
+        //   ...state.form,
+        //   ...presetForm
+        // }
+      }
+    }
+
     // 保存修改
-    const saveChange = () => {
+    const saveChange = async () => {
       const params = {...state.form}
       params.fontcolor = parseInt((params.fontcolor as string).replace('#', '0x'), 16)
       params.options = sumOption()
       params.auto = params.auto ? 1 : 0
-      route.meta.watermarkType == 'filemark' ? watermarkSetfm(params) : watermarkSetdm( params)
+      const result = await (route.meta.watermarkType == 'filemark' ? watermarkSetfm(params) : watermarkSetdm(params))
+      if (result.Code == 1) {
+        message.success('保存成功！')
+      } else {
+        message[result.type](result.message || '保存失败')
+      }
+      queryWatermarkConfig()
     }
 
     // 监听传过来的gid
     watch(() => props.gid, value => {
       state.form.groudid = ~~props.gid
-      // 打印水印
-      if (route.meta.watermarkType == 'filemark') {
-        watermarkFileMark({gid: value, uid: 0})
-      } else {
-        watermarkDocMark({gid: value, uid: 0})
-      }
+      queryWatermarkConfig()
     }, {immediate: true})
+
+    // 监听传过来的uid
+    watch(() => props.uid, value => {
+      state.form.userid = ~~props.uid
+      queryWatermarkConfig()
+    }, {immediate: true})
+
     // 监听传过来的gid
     watch(() => route.fullPath, value => {
       console.log(route.meta.watermarkType)
-    }, {immediate:true})
+    }, {immediate: true})
 
     return {
       ...toRefs(state),
@@ -186,6 +226,7 @@ export default defineComponent({
   max-height: 0;
   overflow: hidden;
   transition: max-height .3s;
+
   &.show {
     max-height: 400px;
   }

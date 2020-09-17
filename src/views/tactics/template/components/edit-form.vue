@@ -48,10 +48,10 @@
         >
           添加
         </a-button>
-        <a-button @click="delAppPolicy" :disabled="disabled && !form.processid">
+        <a-button @click="delAppPolicy" :disabled="disabled && !processid">
           删除
         </a-button>
-        <a-button @click="setAppPolicy" :disabled="disabled && !form.processid">
+        <a-button @click="setAppPolicy" :disabled="disabled && !processid">
           修改
         </a-button>
       </a-form-item>
@@ -63,11 +63,11 @@
 import {defineComponent, reactive, toRefs, watch, createVNode} from 'vue'
 
 import {Divider, message, Modal, Breadcrumb} from 'ant-design-vue'
-import {appDel, appAdd, appSet} from '@/api/policy'
+import {appDel, appAdd, appSet, appProc} from '@/api/policy'
 import {ExclamationCircleOutlined} from '@ant-design/icons-vue'
 
 interface FormProps {
-  formData: object;
+  processid: string | number;
   disabled: boolean;
   selectedNames?: object;
 }
@@ -78,9 +78,9 @@ export default defineComponent({
     ADivider: Divider, [Breadcrumb.name]: Breadcrumb, [Breadcrumb.Item.name]: Breadcrumb.Item
   },
   props: {
-    formData: {
-      type: Object,
-      default: () => ({})
+    processid: {
+      type: [Number, String],
+      default: ''
     },
     disabled: {
       type: Boolean,
@@ -104,8 +104,8 @@ export default defineComponent({
         externname: "",
         policytype: "",
         policyname: '',
-        policysum: '',
-        processid: -99,
+        policysum: 0,
+        processid: props.processid,
         processname: ""
       },
       formItemLayout: {
@@ -114,6 +114,31 @@ export default defineComponent({
       }
     })
 
+    // 获取进程详情
+    const getAppProc = async (processid) => {
+      if (processid == '') return
+      const data = await appProc({id: processid})
+      // console.log(value, '表单')
+      state.form.policyname ??= state.form.policyname
+      // console.log(state.form, '表单')
+      state.form = {
+        ...state.form,
+        ...data
+      }
+      state.form.type = ''
+      state.form.processid = processid
+      state.form.checks = []
+      state.form.type = (256 & state.form.policysum) == 0 ? '0' : '256'
+      if (state.form.type == '256') { // 手动加密
+        if (0 != (64 & state.form.policysum)) { // 加密副本
+          !state.form.checks.includes('64') && state.form.checks.push('64')
+        }
+      }
+      if (0 != (128 & state.form.policysum)) { // 扩展名不匹配禁止加密
+        !state.form.checks.includes('128') && state.form.checks.push('128')
+      }
+    }
+
     watch(() => props.selectedNames, (names: any) => {
       console.log(names, 'names')
       state.selectedNames.type = names.type
@@ -121,27 +146,7 @@ export default defineComponent({
       state.form.applicationid = names.applicationid
     })
 
-    watch(() => props.formData, (value: any) => {
-      console.log(value, '啥子')
-      // console.log(value, '表单')
-      value.policyname ??= state.form.policyname
-      // console.log(state.form, '表单')
-      state.form = {
-        ...state.form,
-        ...value
-      }
-      state.form.type = ''
-      state.form.checks = []
-      state.form.type = (256 & value.policysum) == 0 ? '0' : '256'
-      if (state.form.type == '256') { // 手动加密
-        if (0 != (64 & value.policysum)) { // 加密副本
-          !state.form.checks.includes('64') && state.form.checks.push('64')
-        }
-      }
-      if (0 != (128 & value.policysum)) { // 扩展名不匹配禁止加密
-        !state.form.checks.includes('128') && state.form.checks.push('128')
-      }
-    })
+    watch(() => props.processid, (value: any) => getAppProc(value))
 
     const delAppPolicy = () => {
       Modal.confirm({
@@ -155,7 +160,7 @@ export default defineComponent({
           if (res.Code == 1) {
             message.success('删除成功！')
             emit('delete-row', state.form.processid)
-            state.form.processid = -99
+            state.form.processid = ''
           } else {
             message.info(res.message)
           }
@@ -192,6 +197,7 @@ export default defineComponent({
       const res = await appSet(params)
       if (res.Code == 1) {
         message.success('修改成功！')
+        getAppProc(processid)
         emit('edit-row', processid)
       } else {
         message.info(res.message)

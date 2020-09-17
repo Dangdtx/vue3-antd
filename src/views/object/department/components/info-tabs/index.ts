@@ -1,8 +1,8 @@
 import BaseInfo from './base-info.vue'
-import DeptInfo from './dept-info.vue'
+import DeptPolicy from './dept-policy.vue'
 import MemberInfo from './member-info.vue'
 import Operate from './operate.vue'
 
 export {
-    BaseInfo, DeptInfo, Operate, MemberInfo
+    BaseInfo, DeptPolicy, Operate, MemberInfo
 }

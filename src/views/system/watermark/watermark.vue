@@ -6,7 +6,7 @@
     <template v-slot:right-content>
       <div class="right-content">
         <table-data :selected-dept-id="selectedDeptId" @selected="tableRowSelected" />
-        <watermark-info :gid="gid" :tree-title="treeTitle" :table-title="tableTitle" />
+        <watermark-info :gid="selectedDeptId" :uid="uid" :tree-title="treeTitle" :table-title="tableTitle" />
       </div>
     </template>
   </split-panel>
@@ -28,14 +28,14 @@ export default defineComponent({
       selectedDeptId: '0',
       treeTitle: '全局组',
       tableTitle: '',
-      gid: '0'
+      uid: 0
     })
 
     // 选择的水印组id
     const selectedTree = (value) => {
+      state.uid = 0
       state.selectedDeptId = value
       state.tableTitle = ''
-      state.gid = value
     }
 
     const selectedNode = (node) => {
@@ -45,8 +45,8 @@ export default defineComponent({
 
     // 表格选中的行
     const tableRowSelected = (record) => {
-      state.tableTitle = record.title
-      state.gid = record.id
+      state.tableTitle = record.username
+      state.uid = record.id
     }
 
     return {

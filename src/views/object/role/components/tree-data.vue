@@ -106,7 +106,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .tree-wrapper {
-  height: 600px;
   overflow: auto;
 
   ::v-deep(.ant-tree-title) {

@@ -14,7 +14,7 @@
       <span>{{ formatOptions(record) }}</span>
     </template>
   </a-table>
-  <edit-form :form-data="formData" :disabled="!isSelectedTableItem" @edit-row="editRow" @delete-row="deleteRow" @add-row="addRow" v-bind="$attrs"/>
+  <edit-form :processid="processid" :disabled="!isSelectedTableItem" @edit-row="editRow" @delete-row="deleteRow" @add-row="addRow" v-bind="$attrs"/>
 </template>
 
 <script lang="ts">
@@ -60,19 +60,16 @@ export default defineComponent({
     const columns: Array<any> = temColumns
     const state = reactive({
       loading: false,
+      processid: '',
       isSelectedTableItem: false,
-      dataList: [],
-      formData: {
-        processid: ''
-      },
+      dataList: []
     })
 
     const getAppByModule = async (id) => {
+      state.processid = ''
+      state.loading = true
       const data = await appBymodule({id}).finally(() => state.loading = false)
         state.dataList = data
-        state.formData = {
-          processid: ''
-        }
     }
 
     const formatOptions = (record) => {
@@ -101,39 +98,32 @@ export default defineComponent({
       state.loading = true
       console.log(value, '收到了')
       state.isSelectedTableItem = false
-      state.formData.processid = ''
       getAppByModule(value)
     })
 
-    const getAppProc = async (processid) => {
-      const data = await appProc({id: processid})
-      state.formData = data
-    }
-
     const customRow = record => ({
       class: {
-        click: state.formData.processid == record.processid
+        click: state.processid == record.processid
       },
       onclick: async e => {
         e.preventDefault();
         e.stopPropagation()
-        state.isSelectedTableItem = false
+        state.isSelectedTableItem = true
         console.log(record, '点击的表格')
-        state.formData.processid = record.processid
-        getAppProc(record.processid)
+        state.processid = record.processid
       }
     })
 
     const addRow = (res: boolean) => {
       if (res) {
-        state.formData.processid = ''
+        state.processid = ''
         getAppByModule(props.selectedId)
       }
     }
 
     const deleteRow = (processid) => getAppByModule(props.selectedId)
 
-    const editRow = (processid) => getAppProc(processid)
+    const editRow = (processid) => getAppByModule(props.selectedId)
 
     return {
       ...toRefs(state),

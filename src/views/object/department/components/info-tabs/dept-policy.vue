@@ -4,14 +4,17 @@
       <a-form-item :label-col="{span: 10}" label-align="left"  :colon="false"
                    :wrapper-col="{span: 14}">
         <template v-slot:label>
-          <a-tree
-              v-model:checkedKeys="checkedKeys"
-              :checkStrictly="true"
-              checkable
-              :tree-data="treeData"
-              @select="selectedTree"
-              @check="checkTreeNode"
-          />
+          <a-spin :spinning="treeIsLoad" tip="加载中">
+            <a-tree
+                style="min-height: 200px"
+                v-model:checkedKeys="checkedKeys"
+                :checkStrictly="true"
+                checkable
+                :tree-data="treeData"
+                @select="selectedTree"
+                @check="checkTreeNode"
+            />
+          </a-spin>
         </template>
         <div>当前选中：{{ currentSelected }}</div>
         <a-table
@@ -75,12 +78,12 @@
 
 <script lang="ts">
 import {defineComponent, onMounted, reactive, toRefs} from 'vue'
-import {Divider, Tree, message} from 'ant-design-vue'
+import {Divider, Tree, Spin, message} from 'ant-design-vue'
 import {deptPolicy,deptIdPolicy, moduleModules, deptModule, deptChangeprocess, appByModule, deptProc, deptSetpolicy} from "@/api/dept";
 
 export default defineComponent({
-  name: "base-info",
-  components: {[Divider.name]: Divider, [Tree.name]: Tree},
+  name: "dept-policy",
+  components: {[Divider.name]: Divider, [Tree.name]: Tree, [Spin.name]: Spin},
   setup(props, {attrs}) {
 
     const state = reactive({
@@ -90,6 +93,7 @@ export default defineComponent({
       isSelectedTableItem: false,
       appModules: [],
       loading: false,
+      treeIsLoad: false, // 树加载状态
       form: {
         type: -1,
         checks: [] as number[],
@@ -122,10 +126,11 @@ export default defineComponent({
     ]
 
     onMounted(async () => {
+      state.treeIsLoad = true
       const module = await deptModule({deptID: attrs.deptId})
       const policy = await deptPolicy({deptID: attrs.deptId})
       const modules = await moduleModules({})
-      const result = await deptIdPolicy({}, attrs.deptId)
+      const result = await deptIdPolicy({}, attrs.deptId).finally(() => state.treeIsLoad = false)
 
       // 选中的
       const moduleSelected = module.map(item => item.applicationid)

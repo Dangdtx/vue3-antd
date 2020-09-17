@@ -34,24 +34,20 @@ import SplitPanel from '@/components/split-panel/index.vue'
 
 import {useEventbus} from '@/hooks/useEventbus'
 
-import {watermarkUsers} from '@/api/watermark'
+import {watermarkUsers, watermarkRemove} from '@/api/watermark'
 
 const temColumns = [
   {
     title: '用户',
-    dataIndex: 'title',
+    dataIndex: 'username',
   },
   {
     title: '姓名',
-    dataIndex: 'office',
+    dataIndex: 'cname',
   },
   {
     title: '所属部门',
-    dataIndex: 'tel',
-  },
-  {
-    title: '所属组',
-    dataIndex: 'Uu',
+    dataIndex: 'userpri',
   },
   {
     title: '操作',
@@ -107,7 +103,7 @@ export default defineComponent({
 
     // 卸载
     const delDept = async (record) => {
-      const res = await watermarkUsers({deptID: record.id})
+      const res = await watermarkRemove({uid: record.id})
       if (res.Code == 1) {
         message.success('删除成功')
         getTableData(props.selectedDeptId)

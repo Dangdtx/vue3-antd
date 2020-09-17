@@ -35,6 +35,8 @@ export function userSetdefaultpolicy(params: any) {
         url: Api.userSetdefaultpolicy,
         method: 'POST',
         params,
+    }, {
+        isTransformRequestResult: false
     });
 }
 /**

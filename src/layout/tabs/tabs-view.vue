@@ -242,6 +242,7 @@ export default defineComponent({
     padding: 20px 14px 0;
     /*height: calc(100vh - #{$header-height});*/
     height: calc(100vh - 110px);
+    overflow: auto;
   }
 }
 .zoom-fade-enter-active,

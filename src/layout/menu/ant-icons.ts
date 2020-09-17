@@ -1,5 +1,6 @@
 import {
     MenuFoldOutlined,
+    DesktopOutlined,
     UserOutlined,
     TeamOutlined,
     ToolOutlined,
@@ -12,6 +13,7 @@ import {
 
 export default {
     MenuFoldOutlined,
+    DesktopOutlined,
     UserOutlined,
     TeamOutlined,
     ToolOutlined,

@@ -5,7 +5,7 @@
           <base-info v-bind="$props" />
         </a-tab-pane>
         <a-tab-pane key="2" tab="部门策略">
-          <dept-info v-bind="$props" />
+          <dept-policy v-bind="$props" />
         </a-tab-pane>
         <a-tab-pane key="3" tab="成员组成">
           <member-info v-bind="$props" />
@@ -20,12 +20,12 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {Card, Tabs} from 'ant-design-vue'
-import {BaseInfo, DeptInfo, MemberInfo, Operate} from './components/info-tabs'
+import {BaseInfo, DeptPolicy, MemberInfo, Operate} from './components/info-tabs'
 
 export default defineComponent({
   name: "dept-info",
   props: ['deptId'],
-  components: {[Card.name]: Card, [Tabs.name]: Tabs, [Tabs.TabPane.name]: Tabs.TabPane, BaseInfo, DeptInfo, MemberInfo, Operate},
+  components: {[Card.name]: Card, [Tabs.name]: Tabs, [Tabs.TabPane.name]: Tabs.TabPane, BaseInfo, DeptPolicy, MemberInfo, Operate},
   setup() {
 
     return {}

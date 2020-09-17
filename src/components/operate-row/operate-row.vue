@@ -50,7 +50,7 @@ export default defineComponent({
 .actions {
   float: right;
   display: none;
-  > span {
+  > ::v-deep(span) {
     margin-left: 5px;
     &:hover {
       color: #40a9ff;

@@ -26,7 +26,7 @@
 import {message, Tree} from 'ant-design-vue'
 import {defineComponent, toRefs, SetupContext, reactive, onMounted, unref} from 'vue'
 
-import {useDeptNew} from './modals/useModals'
+import {useDeptNew, useAssignUser} from './modals/useModals'
 import {OperateRow} from '@/components/operate-row'
 
 import {watermarkGroup, watermarkDel, watermarkUsers} from '@/api/watermark'
@@ -168,7 +168,11 @@ export default defineComponent({
     }
     // 添加行
     const addRow = (node) => {
-      useDeptNew({fatherId: node.eventKey})
+      if (getPosLength(node) == 2) {
+        useDeptNew({fatherId: node.eventKey})
+      } else if (getPosLength(node) == 3) {
+        useAssignUser({groupId: node.eventKey, treeTitle: node.dataRef.title})
+      }
     }
     // 编辑行
     const editRow = (node) => {
@@ -192,7 +196,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .tree-wrapper {
-  height: 600px;
   overflow: auto;
 
   ::v-deep(.ant-tree-title) {

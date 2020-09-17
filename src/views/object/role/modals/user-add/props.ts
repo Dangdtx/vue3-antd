@@ -1,3 +1,3 @@
 export interface ModalProps {
-    fatherId: string
+    fatherId: string;
 }

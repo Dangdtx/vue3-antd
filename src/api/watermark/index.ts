@@ -1,9 +1,18 @@
 import http from '@/utils/http/axios';
 import {ContentTypeEnum} from '@/enums/httpEnum'
 
+// /watermark/users gid 查询组内用户
+// /watermark/others gid 查询非组内用户
+// /watermark/add gid uid 添加组用户
+// /watermark/remove uid 移除组用户
+// /watermark/del gid 删除水印组
+
 enum Api {
     watermarkGroup = '/watermark/group', // 获取水印组
     watermarkUsers = '/watermark/users', // 获取水印组用户
+    watermarkOthers = '/watermark/others', // 查询非组内用户
+    watermarkAdd = '/watermark/add', // 添加组用户
+    watermarkRemove = '/watermark/remove', // 移除组用户
     watermarkFileMark = '/watermark/filemark', // 获取文档水印配置
     watermarkDocMark = '/watermark/docmark', // 获取打印水印配置
     watermarkNew = '/watermark/new', // 新建水印组
@@ -33,6 +42,40 @@ export function watermarkUsers(params: any) {
     });
 }
 /**
+ * @description: 移除组用户
+ */
+export function watermarkRemove(params: any) {
+    return http.request({
+        url: Api.watermarkRemove,
+        method: 'POST',
+        params,
+    }, {
+        isTransformRequestResult: false
+    });
+}
+/**
+ * @description: 获取非组内用户
+ */
+export function watermarkOthers(params: any) {
+    return http.request({
+        url: Api.watermarkOthers,
+        method: 'POST',
+        params,
+    });
+}
+/**
+ * @description: 添加水印组用户
+ */
+export function watermarkAdd(params: any) {
+    return http.request({
+        url: Api.watermarkAdd,
+        method: 'POST',
+        params,
+    }, {
+        isTransformRequestResult: false
+    });
+}
+/**
  * @description: 获取文档水印配置
  */
 export function watermarkFileMark(params: any) {
@@ -40,6 +83,8 @@ export function watermarkFileMark(params: any) {
         url: Api.watermarkFileMark,
         method: 'POST',
         params,
+    }, {
+        isTransformRequestResult: false
     });
 }
 /**
@@ -50,6 +95,8 @@ export function watermarkDocMark(params: any) {
         url: Api.watermarkDocMark,
         method: 'POST',
         params,
+    }, {
+        isTransformRequestResult: false
     });
 }
 /**
