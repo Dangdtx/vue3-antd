@@ -10,12 +10,7 @@
         @select="onSelect"
     >
       <template v-slot:title="node">
-        <span v-if="node.title.indexOf(searchValue) > -1">
-          {{ node.title.substr(0, node.title.indexOf(searchValue)) }}
-          <span style="color: #f50">{{ searchValue }}</span>
-          {{ node.title.substr(node.title.indexOf(searchValue) + searchValue.length) }}
-        </span>
-        <span v-else>{{ node.title }}</span>
+        {{ node.title }}
         <operate-row v-if="!hideOperate" @delete="deleteRow(node)" :hide-del="getPosLength(node) < 3" :hide-edit="getPosLength(node) < 3" @add="addRow(node)" @edit="editRow(node)"/>
       </template>
     </a-tree>
@@ -69,7 +64,6 @@ export default defineComponent({
       autoExpandParent: true,
       checkedKeys: ['0'],
       selectedKeys: ['0'],
-      searchValue: '',
       treeData: [
         {
           title: '全局组',

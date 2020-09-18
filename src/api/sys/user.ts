@@ -7,28 +7,43 @@ import {
 } from './model/userModel';
 
 enum Api {
-  Login = '/login',
-  GetUserInfoById = '/getUserInfoById',
+  login = '/login/login',
+  logout = '/login/logout',
 }
 
 /**
  * @description: 用户登录
  */
-export function loginApi(params: LoginParams) {
-  return http.request<LoginResultModel>({
-    url: Api.Login,
+export function login(params: LoginParams) {
+  return http.request({
+    url: Api.login,
     method: 'POST',
     params,
+  }, {
+    isTransformRequestResult: false
   });
 }
 
 /**
- * @description: 根据用户id获取用户信息
+ * @description: 用户修改密码
  */
-export function getUserInfoById(params: GetUserInfoByUserIdParams) {
-  return http.request<GetUserInfoByUserIdModel>({
-    url: Api.GetUserInfoById,
-    method: 'GET',
+export function changePassword(params, uid) {
+  return http.request({
+    url: `/user/u${uid}/changepw`,
+    method: 'POST',
+    params,
+  }, {
+    isTransformRequestResult: false
+  });
+}
+
+/**
+ * @description: 用户登出
+ */
+export function logout(params) {
+  return http.request({
+    url: Api.logout,
+    method: 'POST',
     params,
   });
 }

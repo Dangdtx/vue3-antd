@@ -2,29 +2,22 @@
   <div class="login-box">
     <div class="login-logo">
       <img src="../../assets/logo.png" alt="">
-      <h1>黑匣子文档安全管理系统</h1>
+      <h1>黑匣子管理系统</h1>
     </div>
     <a-form layout="horizontal" :model="formInline" v-bind="formItemLayout" @submit="handleSubmit" @submit.prevent>
-      <a-form-item label="服务器">
-        <a-input v-model:value="formInline.server" placeholder="Username">
-        </a-input>
-      </a-form-item>
       <a-form-item label="用户名">
-        <a-input v-model:value="formInline.username" placeholder="Username">
+        <a-input v-model:value="formInline.user" placeholder="请输入用户名">
         </a-input>
       </a-form-item>
       <a-form-item label="密码">
-        <a-input v-model:value="formInline.password" type="password" placeholder="Password">
-        </a-input>
-      </a-form-item>
-      <a-form-item label="端口">
-        <a-input v-model:value="formInline.port" type="password" placeholder="Password">
+        <a-input v-model:value="formInline.password" type="password" placeholder="请输入密码" autocomplete="new-password">
         </a-input>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 19, offset: 5 }">
         <a-button
             type="primary"
             html-type="submit"
+            :loading="loading"
             :disabled="formInline.user === '' || formInline.password === ''"
             block
         >
@@ -37,30 +30,51 @@
 
 <script lang="ts">
 import {defineComponent, reactive, toRefs} from 'vue'
+import {message} from 'ant-design-vue'
+import md5 from 'blueimp-md5'
 
-import router from "@/router";
+import {useRoute, useRouter} from "vue-router";
 
-import {loginApi} from "@/api/sys/user";
+import {login} from "@/api/sys/user";
 
 export default defineComponent({
-  name: "index",
+  name: "login",
   setup() {
     const state = reactive({
+      loading: false,
       formInline: {
-        server: '',
-        username: '',
+        user: '',
         password: '',
-        port: ''
       },
       formItemLayout: {
-        labelCol: { span: 5 },
-        wrapperCol: { span: 19 },
+        labelCol: {span: 5},
+        wrapperCol: {span: 19},
       }
     })
-    const handleSubmit = () => {
+
+    const router = useRouter()
+    const route = useRoute()
+
+    const handleSubmit = async () => {
+      const hide = message.loading('登录中...', 0)
+      state.loading = true
       console.log(state.formInline)
-      loginApi(state.formInline)
-      router.replace('/')
+      const params = {
+        ...state.formInline
+      }
+      params.password = md5(params.password)
+      const result = await login(params).finally(() => {
+        state.loading = false
+        hide
+      })
+      hide
+      if (result.Code == 1) {
+        const toPath = decodeURIComponent((route.query?.redirect || '/') as string)
+        router.replace(toPath)
+        localStorage.setItem('username', params.user)
+      } else {
+        message[result.type](result.message || '登录失败')
+      }
     }
     return {
       ...toRefs(state),
@@ -75,7 +89,7 @@ export default defineComponent({
   width: 100vw;
   height: 100vh;
   display: flex;
-  padding-top: 200px;
+  padding-top: 300px;
   flex-direction: column;
   align-items: center;
   background: url("../../assets/login.svg");
@@ -84,6 +98,7 @@ export default defineComponent({
   .login-logo {
     display: flex;
     margin-bottom: 20px;
+
     img {
       height: 44px;
     }
@@ -91,6 +106,7 @@ export default defineComponent({
 
   .ant-form {
     width: 340px;
+
     .ant-form-item-label {
       padding-right: 6px;
     }

@@ -26,7 +26,7 @@
       <SettingOutlined/>
       <SearchOutlined/>
       <Dropdown>
-        <a-avatar>admin</a-avatar>
+        <a-avatar>{{ username }}</a-avatar>
         <template v-slot:overlay>
           <a-menu>
             <a-menu-item>
@@ -34,7 +34,7 @@
             </a-menu-item>
             <a-menu-divider/>
             <a-menu-item>
-              <a @click.prevent="logout">退出登录</a>
+              <a @click.prevent="doLogout">退出登录</a>
             </a-menu-item>
           </a-menu>
         </template>
@@ -44,10 +44,12 @@
 </template>
 
 <script lang="ts">
+import {defineComponent, ref} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import components from "@/layout/header/components";
+import {logout} from "@/api/sys/user";
 
-export default {
+export default defineComponent({
   name: "PageHeader",
   components: {...components},
   props: {
@@ -56,22 +58,31 @@ export default {
     }
   },
   setup() {
+    const username = ref(localStorage.getItem('username') || '')
+
     const router = useRouter()
     const route = useRoute()
     console.log(route.matched)
     console.log(router.getRoutes(), 'currentRoute')
 
-    const logout = () => {
+    const doLogout = () => {
       console.log(router, '退出登录')
-      router.replace({name: 'login'})
+      logout({})
+      router.replace({
+        name: 'login',
+        query: {
+          redirect: route.fullPath
+        }
+      })
     }
 
     return {
-      logout,
+      doLogout,
+      username,
       route
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -4,7 +4,7 @@ import { RoleEnum } from '@/enums/roleEnum';
  * @description: 登陆接口参数
  */
 export interface LoginParams {
-  username: string;
+  user: string;
   password: string;
 }
 

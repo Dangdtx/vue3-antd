@@ -22,13 +22,16 @@
       {{ formatRole(record.roleid) }}
     </template>
     <template v-slot:actions="{text, record}">
-      <a-popconfirm
-          :title="selectedDeptId == 1 ? '用户将会被删除，是否继续？' : '用户将会变成普通用户，是否继续？'"
-          placement="leftTop"
-          @confirm="confirmRemove(record)"
-      >
-        <a>移出</a>
-      </a-popconfirm>
+      <div class="actions">
+        <a @click="editUser(record)">修改</a>
+        <a-popconfirm
+            :title="selectedDeptId == 1 ? '用户将会被删除，是否继续？' : '用户将会变成普通用户，是否继续？'"
+            placement="leftTop"
+            @confirm="confirmRemove(record)"
+        >
+          <a>移出</a>
+        </a-popconfirm>
+      </div>
     </template>
   </a-table>
 </template>
@@ -43,6 +46,7 @@ import SplitPanel from '@/components/split-panel/index.vue'
 import {useEventbus} from '@/hooks/useEventbus'
 
 import {userRoleuser, userRemovefromrole, userDelete} from '@/api/user'
+import {useUserEdit} from '../modals/useModals'
 
 const temColumns = [
   {
@@ -68,7 +72,7 @@ const temColumns = [
   {
     title: '操作',
     dataIndex: 'actions',
-    width: 80,
+    width: 100,
     slots: {customRender: 'actions'}
   }
 ]
@@ -143,6 +147,12 @@ export default defineComponent({
       console.log(record)
     }
 
+    // 修改用户
+    const editUser = (record) => {
+      console.log(record, '修改用户')
+      useUserEdit({userInfo: record})
+    }
+
     const closeInfo = () => {
       getTableData(props.selectedDeptId)
     }
@@ -151,6 +161,7 @@ export default defineComponent({
     return {
       ...toRefs(state),
       columns,
+      editUser,
       confirmRemove,
       formatRole,
       closeInfo,
@@ -164,5 +175,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .table-title {
   margin: 0.5em;
+}
+.actions {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

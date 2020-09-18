@@ -2,46 +2,49 @@
   <div class="tabs-view">
     <a-tabs v-model:activeKey="activeKey" @change="changePage" hide-add type="editable-card" @edit="editTabItem"
             class="tabs">
-      <a-tab-pane v-for="(pageItem, index) in pageList" :key="pageItem.fullPath" :closable="pageItem.closable">
-        <template #tab>
-          <a-dropdown :trigger="['contextmenu']">
-            <div style="display: inline-block">
-              {{ pageItem.meta.title }}
-            </div>
-            <template v-slot:overlay>
-              <a-menu style="user-select: none">
-                <a-menu-item @click="reloadPage" :disabled="activeKey !== pageItem.fullPath" key="1">
-                  <reload-outlined/>
-                  刷新
-                </a-menu-item>
-                <a-menu-item @click="removeTab( pageItem.fullPath)" key="2">
-                  <close-outlined/>
-                  关闭
-                </a-menu-item>
-                <a-menu-divider/>
-                <a-menu-item @click="closeLeft(pageItem.fullPath, index)" key="3">
-                  <vertical-right-outlined/>
-                  关闭左侧
-                </a-menu-item>
-                <a-menu-item @click="closeRight(pageItem.fullPath, index)" key="4">
-                  <vertical-left-outlined/>
-                  关闭右侧
-                </a-menu-item>
-                <a-menu-divider/>
-                <a-menu-item @click="closeOther(pageItem.fullPath)" key="5">
-                  <column-width-outlined/>
-                  关闭其他
-                </a-menu-item>
-                <a-menu-item @click="closeAll" key="6">
-                  <minus-outlined/>
-                  关闭全部
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-          <!--          <span @contextmenu="rightClick" style="display: inline-block" :pagekey="pageItem.fullPath">{{pageItem.meta.title}}</span>-->
-        </template>
-      </a-tab-pane>
+      <template v-for="(pageItem, index) in pageList" :key="pageItem.fullPath">
+        <a-tab-pane :closable="pageItem.closable">
+          <template #tab>
+            <a-dropdown :trigger="['contextmenu']">
+              <div style="display: inline-block">
+                {{ pageItem.meta.title }}
+              </div>
+              <template v-slot:overlay>
+                <a-menu style="user-select: none">
+                  <a-menu-item @click="reloadPage" :disabled="activeKey !== pageItem.fullPath" key="1">
+                    <reload-outlined/>
+                    刷新
+                  </a-menu-item>
+                  <a-menu-item @click="removeTab(pageItem.fullPath)" key="2">
+                    <close-outlined/>
+                    关闭
+                  </a-menu-item>
+                  <a-menu-divider/>
+                  <a-menu-item @click="closeLeft(pageItem.fullPath, index)" key="3">
+                    <vertical-right-outlined/>
+                    关闭左侧
+                  </a-menu-item>
+                  <a-menu-item @click="closeRight(pageItem.fullPath, index)" key="4">
+                    <vertical-left-outlined/>
+                    关闭右侧
+                  </a-menu-item>
+                  <a-menu-divider/>
+                  <a-menu-item @click="closeOther(pageItem.fullPath)" key="5">
+                    <column-width-outlined/>
+                    关闭其他
+                  </a-menu-item>
+                  <a-menu-item @click="closeAll" key="6">
+                    <minus-outlined/>
+                    关闭全部
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+            <!--          <span @contextmenu="rightClick" style="display: inline-block" :pagekey="pageItem.fullPath">{{pageItem.meta.title}}</span>-->
+          </template>
+        </a-tab-pane>
+      </template>
+
       <template v-slot:tabBarExtraContent>
         <a-dropdown :trigger="['click']">
           <a class="ant-dropdown-link" @click="e => e.preventDefault()">
@@ -49,16 +52,16 @@
           </a>
           <template v-slot:overlay>
             <a-menu style="user-select: none">
-              <a-menu-item @click="reloadPage" :disabled="activeKey !== $route.fullPath" key="1">
+              <a-menu-item @click="reloadPage" :disabled="activeKey !== route.fullPath" key="1">
                 <reload-outlined/>
                 刷新
               </a-menu-item>
-              <a-menu-item @click="removeTab( $route.fullPath)" key="2">
+              <a-menu-item @click="removeTab(route.fullPath)" key="2">
                 <close-outlined/>
                 关闭
               </a-menu-item>
               <a-menu-divider/>
-              <a-menu-item @click="closeOther($route.fullPath)" key="5">
+              <a-menu-item @click="closeOther(route.fullPath)" key="5">
                 <column-width-outlined/>
                 关闭其他
               </a-menu-item>
@@ -82,19 +85,19 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, Transition, nextTick, toRefs, unref, watch} from 'vue'
+import {defineComponent, reactive, nextTick, toRefs, unref, watch} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import components from "@/layout/tabs/components";
 
 import {message} from 'ant-design-vue'
 
 interface RouteItem {
-  fullPath: any;
+  fullPath: string;
   hash?: any;
   meta?: any;
-  name?: any;
+  name?: string;
   params?: any;
-  path?: any;
+  path?: string;
   query?: any;
 }
 
@@ -206,7 +209,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      $route: route,
+      route,
       changePage,
       editTabItem,
       removeTab,
@@ -245,6 +248,7 @@ export default defineComponent({
     overflow: auto;
   }
 }
+
 .zoom-fade-enter-active,
 .zoom-fade-leave-active {
   transition: transform 0.35s, opacity 0.28s ease-in-out;

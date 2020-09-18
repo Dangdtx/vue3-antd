@@ -32,7 +32,7 @@
             <user-outlined/>
           </template>
         </a-avatar>
-        <div class="username">admin</div>
+        <div class="username">{{ username }}</div>
         <a-input-search
             v-model:value="loginForm.password"
             type="password"
@@ -121,6 +121,7 @@ export default defineComponent({
     const router = useRouter()
 
     const state = reactive({
+      username: localStorage.getItem('username') || '',
       loginForm: {
         username: localStorage.getItem('username') ?? 'admin',
         password: '',

@@ -11,13 +11,9 @@
         @select="onSelect"
     >
       <template v-slot:title="node">
-        <span v-if="node.title.indexOf(searchValue) > -1">
-          {{ node.title.substr(0, node.title.indexOf(searchValue)) }}
-          <span style="color: #f50">{{ searchValue }}</span>
-          {{ node.title.substr(node.title.indexOf(searchValue) + searchValue.length) }}
-        </span>
-        <span v-else>{{ node.title }}</span>
-        <operate-row v-if="!hideOperate" @delete="deleteRow(node)" :hide-edit="true" @add="addRow(node)" @edit="editRow(node)"/>
+        {{ node.title }}
+        <operate-row v-if="!hideOperate" @delete="deleteRow(node)" :hide-edit="true" @add="addRow(node)"
+                     @edit="editRow(node)"/>
       </template>
     </a-tree>
   </div>
@@ -70,7 +66,6 @@ export default defineComponent({
       autoExpandParent: true,
       checkedKeys: [],
       selectedKeys: [props.rootTreeOption.key],
-      searchValue: '',
       treeData: [
         {
           title: '公司',
@@ -101,15 +96,18 @@ export default defineComponent({
     // 初始化树
     const initDeptTree = async () => {
       state.treeData[0].children = await getDeptTree(state.treeData[0].key)
+      state.expandedKeys = [props.rootTreeOption.key]
       state.autoExpandParent = false
+      state.checkedKeys = []
+      state.selectedKeys = [props.rootTreeOption.key]
     }
 
     onMounted(() => {
       refreshTree(() => {
         // todo
-        // router.push({
-        //   path: '/redirect' + unref(route).fullPath,
-        // })
+        router.push({
+          path: '/redirect' + unref(route).fullPath,
+        })
       })
       initDeptTree()
     })

@@ -1,8 +1,20 @@
 import {message as Message} from "ant-design-vue";
+import {useRouter, useRoute} from "vue-router";
+const router = useRouter()
+const route = useRoute()
 
 const error = Message.error!;
 export function checkStatus(status: number, msg: string): void {
   switch (status) {
+    case -101:
+      error('登录身份已过期，请重新登录！');
+      router.replace({
+        name: 'login',
+        query: {
+          redirect: route.fullPath
+        }
+      })
+      break;
     case 400:
       error(`${msg}`);
       break;

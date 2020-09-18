@@ -10,12 +10,7 @@
         @select="onSelect"
     >
       <template v-slot:title="node">
-        <span v-if="node.title.indexOf(searchValue) > -1">
-          {{ node.title.substr(0, node.title.indexOf(searchValue)) }}
-          <span style="color: #f50">{{ searchValue }}</span>
-          {{ node.title.substr(node.title.indexOf(searchValue) + searchValue.length) }}
-        </span>
-        <span v-else>{{ node.title }}</span>
+        {{ node.title }}
         <operate-row
             :hide-edit="getPosLength(node) < 3"
             :hide-del="getPosLength(node) < 3"
@@ -26,8 +21,6 @@
       </template>
     </a-tree>
   </div>
-  <a-input-search style="margin-bottom: 8px" placeholder="关键字查找" @compositionstart="onChange" @compositionend="onChange"
-                  @change="onChange"/>
 </template>
 
 <script lang="ts">
@@ -65,7 +58,7 @@ export default defineComponent({
       expandedKeys: ['0'],
       autoExpandParent: true,
       selectedKeys: [] as string[] | number[],
-      searchValue: '',
+
       treeData: [
         {
           title: '策略配置',
@@ -75,18 +68,6 @@ export default defineComponent({
         }
       ],
     })
-
-    const dataList: TreeItem[] = [];
-    const generateList = (data: TreeItem[]) => {
-      for (let i = 0; i < data.length; i++) {
-        const node = data[i];
-        const {key, title} = node;
-        dataList.push({key, title});
-        if (node.children) {
-          generateList(node.children);
-        }
-      }
-    }
 
     // 获取部门树
     const getDeptTree = async (fatherId: string | number) => {
@@ -122,7 +103,6 @@ export default defineComponent({
         item.children = await getDeptTree(item.key)
       }
       state.autoExpandParent = true
-      setTimeout(() => generateList(state.treeData), 1200)
     }
 
     // 加载树节点
@@ -135,7 +115,6 @@ export default defineComponent({
         }
         (async () => {
           treeNode.dataRef.children = await getDeptTree(treeNode.eventKey)
-          generateList(state.treeData)
           resolve();
         })()
         // state.treeData = [...state.treeData];
@@ -168,37 +147,6 @@ export default defineComponent({
       posLength > 3 && context.emit('selected', node.eventKey.toString())
       context.emit('selected-node', node)
       state.selectedKeys = selectedKeys;
-    }
-    const getParentKey = (key: any, tree: any): any => {
-      let parentKey;
-      for (let i = 0; i < tree.length; i++) {
-        const node = tree[i];
-        if (node.children) {
-          if (node.children.some((item: any) => item.key === key)) {
-            parentKey = node.key;
-          } else if (getParentKey(key, node.children)) {
-            parentKey = getParentKey(key, node.children);
-          }
-        }
-      }
-      return parentKey;
-    }
-    const onChange = (e: any) => {
-      const value = e.target.value;
-      console.log(dataList)
-      const expandedKeys = dataList
-          .map((item: any) => {
-            if (item.title.indexOf(value) > -1) {
-              return getParentKey(item.key, state.treeData);
-            }
-            return null;
-          })
-          .filter((item, i, self) => item && self.indexOf(item) === i);
-      Object.assign(state, {
-        expandedKeys,
-        searchValue: value,
-        autoExpandParent: true,
-      });
     }
 
     // 删除行
@@ -270,7 +218,6 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      onChange,
       getPosLength,
       onSelect,
       onExpand,

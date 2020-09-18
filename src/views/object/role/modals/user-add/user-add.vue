@@ -85,6 +85,7 @@ import {useEventbus} from "@/hooks/useEventbus";
 import {deptTree} from "@/api/dept";
 import {userAdd} from '@/api/user'
 import {message} from "ant-design-vue";
+import md5 from 'blueimp-md5'
 
 import components from './components'
 
@@ -158,6 +159,7 @@ export default defineComponent({
       state.formInline.needKeylogin = state.formInline.needKeylogin ? 1 : 0
       state.formInline.notneddkey = state.formInline.notneddkey ? 1 : 0
       state.formInline.status = state.formInline.status ? 0 : 1
+      state.formInline.password = md5(state.formInline.password)
       const res = await userAdd(state.formInline).finally(() => state.loading = false)
       if (res.Code == 1) {
         message.success('添加成功')
