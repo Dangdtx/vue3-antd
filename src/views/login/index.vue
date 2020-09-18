@@ -69,6 +69,7 @@ export default defineComponent({
       })
       if (result.Code == 1) {
         const toPath = decodeURIComponent((route.query?.redirect || '/') as string)
+        message.success('登录成功！')
         router.replace(toPath)
         localStorage.setItem('username', params.user)
       } else {
