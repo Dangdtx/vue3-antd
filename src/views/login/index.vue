@@ -65,9 +65,8 @@ export default defineComponent({
       params.password = md5(params.password)
       const result = await login(params).finally(() => {
         state.loading = false
-        hide
+        message.destroy()
       })
-      hide
       if (result.Code == 1) {
         const toPath = decodeURIComponent((route.query?.redirect || '/') as string)
         router.replace(toPath)
