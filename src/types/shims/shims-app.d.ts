@@ -65,8 +65,3 @@ declare module 'ant-design-vue/es/base' {
     }
     export default Base
 }
-
-declare module 'mitt' {
-    import mitt from 'mitt'
-    export default mitt
-}

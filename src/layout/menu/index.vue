@@ -1,6 +1,6 @@
 <template>
     <div class="logo">
-      <img src="../../assets/logo.png" alt="">
+      <img src="../../assets/logo.svg" alt="">
       <h1 v-show="!collapsed">黑匣子控制中心</h1>
     </div>
     <a-menu @click="clickMenuItem" theme="dark" mode="inline" :inlineCollapsed="false" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys"  @openChange="onOpenChange">
@@ -81,6 +81,7 @@ export default defineComponent({
     })
 
     watch(() => route.fullPath, () => {
+      if (route.name == 'login') return
       openKeys.value = getOpenKeys()
       selectedKeys.value = [route.path]
     })
@@ -110,7 +111,6 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   img {
-    width: 32px;
     height: 32px;
   }
   h1 {
@@ -118,6 +118,7 @@ export default defineComponent({
     word-break: keep-all;
     white-space: nowrap;
     margin-bottom: 0;
+    margin-left: 8px;
   }
 }
 </style>

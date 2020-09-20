@@ -2,9 +2,14 @@
   <div @keyup="$emit('update:un-lock-login',true)" @mousedown.stop @contextmenu.prevent :class="{unLockLogin}"
        class="lockscreen">
     <template v-if="!unLockLogin">
-      <div @click="$emit('update:un-lock-login',true)" class="lock">
-        <lock-outlined/>
-        <unlock-outlined/>
+      <div class="lock-box">
+        <div class="lock">
+          <span @click="$emit('update:un-lock-login',true)" class="lock-icon" title="解锁屏幕">
+            <lock-outlined/>
+            <unlock-outlined/>
+          </span>
+        </div>
+        <h6 class="tips">由于您长时间未操作，需重新输入登录密码解锁进入系统。</h6>
       </div>
       <div class="container">
         <div class="number">{{ battery.level }}%</div>
@@ -44,8 +49,7 @@
             <arrow-right-outlined/>
           </template>
         </a-input-search>
-        <a @click="nav2login">忘记密码</a>
-        <a @click="nav2login">重新登录</a>
+        <a style="margin-top: 10px" @click="nav2login">重新登录</a>
       </div>
     </template>
     <template v-if="!unLockLogin">
@@ -79,7 +83,7 @@ import {
   WifiOutlined
 } from '@ant-design/icons-vue'
 
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import {useUserOnline} from '@/hooks/useUserStatus'
 import {useTime} from '@/hooks/useTime'
 import {setIsLock} from '@/hooks/useUserStatus'
@@ -119,6 +123,7 @@ export default defineComponent({
     const {online} = useUserOnline()
 
     const router = useRouter()
+    const route = useRoute()
 
     const state = reactive({
       username: localStorage.getItem('username') || '',
@@ -199,7 +204,12 @@ export default defineComponent({
     const nav2login = () => {
       emit('update:un-lock-login', false)
       emit('update:lock-time', 60 * 10)
-      router.push('/login')
+      router.replace({
+        path: '/login',
+        query: {
+          redirect: route.fullPath
+        }
+      })
     }
 
     return {
@@ -252,24 +262,37 @@ export default defineComponent({
     }
   }
 
-  .lock {
+  .lock-box {
     position: absolute;
     top: 100px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 34px;
-    cursor: pointer;
 
-    .anticon-unlock {
-      display: none;
+    .tips {
+      color: white;
+      cursor: text;
     }
 
-    &:hover .anticon-unlock {
-      display: initial;
-    }
+    .lock {
+      display: flex;
+      justify-content: center;
 
-    &:hover .anticon-lock {
-      display: none;
+      .lock-icon {
+        cursor: pointer;
+
+        .anticon-unlock {
+          display: none;
+        }
+
+        &:hover .anticon-unlock {
+          display: initial;
+        }
+
+        &:hover .anticon-lock {
+          display: none;
+        }
+      }
     }
   }
 

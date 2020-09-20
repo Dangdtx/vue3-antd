@@ -1,24 +1,26 @@
 <template>
   <div class="login-box">
     <div class="login-logo">
-      <img src="../../assets/logo.png" alt="">
-      <h1>黑匣子管理系统</h1>
+      <img src="../../assets/logo.svg" alt="">
+      <h1>黑匣子控制中心</h1>
     </div>
-    <a-form layout="horizontal" :model="formInline" v-bind="formItemLayout" @submit="handleSubmit" @submit.prevent>
-      <a-form-item label="用户名">
-        <a-input v-model:value="formInline.user" placeholder="请输入用户名">
+    <a-form layout="horizontal" :model="formInline" @submit="handleSubmit" @submit.prevent>
+      <a-form-item>
+        <a-input v-model:value="formInline.user" size="large" placeholder="请输入用户名">
+          <template v-slot:prefix><user-outlined type="user"/></template>
         </a-input>
       </a-form-item>
-      <a-form-item label="密码">
-        <a-input v-model:value="formInline.password" type="password" placeholder="请输入密码" autocomplete="new-password">
+      <a-form-item>
+        <a-input v-model:value="formInline.password" size="large" type="password" placeholder="请输入密码" autocomplete="new-password">
+          <template v-slot:prefix><lock-outlined type="user"/></template>
         </a-input>
       </a-form-item>
-      <a-form-item :wrapper-col="{ span: 19, offset: 5 }">
+      <a-form-item>
         <a-button
             type="primary"
             html-type="submit"
+            size="large"
             :loading="loading"
-            :disabled="formInline.user === '' || formInline.password === ''"
             block
         >
           登录
@@ -31,6 +33,7 @@
 <script lang="ts">
 import {defineComponent, reactive, toRefs} from 'vue'
 import {message} from 'ant-design-vue'
+import {UserOutlined, LockOutlined} from '@ant-design/icons-vue'
 import md5 from 'blueimp-md5'
 
 import {useRoute, useRouter} from "vue-router";
@@ -39,16 +42,13 @@ import {login} from "@/api/sys/user";
 
 export default defineComponent({
   name: "login",
+  components: {UserOutlined, LockOutlined},
   setup() {
     const state = reactive({
       loading: false,
       formInline: {
         user: '',
         password: '',
-      },
-      formItemLayout: {
-        labelCol: {span: 5},
-        wrapperCol: {span: 19},
       }
     })
 
@@ -89,7 +89,7 @@ export default defineComponent({
   width: 100vw;
   height: 100vh;
   display: flex;
-  padding-top: 300px;
+  padding-top: 240px;
   flex-direction: column;
   align-items: center;
   background: url("../../assets/login.svg");
@@ -97,19 +97,24 @@ export default defineComponent({
 
   .login-logo {
     display: flex;
-    margin-bottom: 20px;
+    align-items: center;
+    margin-bottom: 30px;
 
     img {
-      height: 44px;
+      height: 48px;
+    }
+    h1 {
+      margin-left: 10px;
+      margin-bottom: 0;
     }
   }
 
-  .ant-form {
-    width: 340px;
+    .ant-form {
+      width: 400px;
 
-    .ant-form-item-label {
-      padding-right: 6px;
-    }
+      .ant-form-item-label {
+        padding-right: 6px;
+      }
   }
 }
 </style>

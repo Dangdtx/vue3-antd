@@ -136,8 +136,10 @@ export default defineComponent({
       nextTick(() => localStorage.setItem('routes', JSON.stringify(state.pageList)))
     }
 
+    const whiteList = ['Redirect', 'login']
+
     watch(() => route.fullPath, (to, from) => {
-      if (route.name == 'Redirect') return
+      if (whiteList.includes(route.name as string)) return
       state.activeKey = to
       if (!state.pageList.find((item: RouteItem) => unref(item).fullPath == to)) {
         state.pageList.push(getSimpleRoute(route))

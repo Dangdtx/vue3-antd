@@ -24,7 +24,7 @@ export function useUserLeave() {
     const timekeeping = () => {
         lockTime.value = initTime
         clearInterval(timer)
-        if (route.path == '/login') return
+        if (route.name == 'login') return
         setIsLock(false)
         timer = setInterval(() => {
             if (--lockTime.value <= 0) {
@@ -34,11 +34,12 @@ export function useUserLeave() {
         }, 1000)
     }
 
-    watch(() => route.path, value => {
-        if (value == '/login') {
+    watch(() => route.fullPath, value => {
+        if (route.name == 'login') {
             lockTime.value = initTime
+            clearInterval(timer)
         }
-    })
+    }, {immediate: true})
 
     onMounted(() => {
         document.addEventListener('mousedown', timekeeping)

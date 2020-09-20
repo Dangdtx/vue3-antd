@@ -3,6 +3,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const CompressionPlugin = require("compression-webpack-plugin")
 // 去除console
 const UglifyJsPlugin = require('terser-webpack-plugin')
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const path = require('path')
 const resolve = dir => path.join(__dirname, dir) // 路径
 
@@ -77,6 +78,7 @@ module.exports = {
                 //     deleteOriginalAssets: true
                 // })
             )
+            config.plugins.push(new LodashModuleReplacementPlugin())
             config.plugins.push(new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/))
             // config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
 
