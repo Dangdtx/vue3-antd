@@ -256,7 +256,7 @@ export default defineComponent({
   transition: transform 0.35s, opacity 0.28s ease-in-out;
 }
 
-.zoom-fade-enter {
+.zoom-fade-enter-from {
   opacity: 0;
   transform: scale(0.97);
 }

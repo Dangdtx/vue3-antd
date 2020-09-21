@@ -15,7 +15,7 @@ import {setObjToUrlParams} from '@/utils/urlUtils'
 import {RequestOptions, Result} from './types';
 
 const isDev = process.env.NODE_ENV === 'development'
-
+import router from  '@/router'
 
 /**
  * @description: 数据处理，方便区分多种处理方式
@@ -41,6 +41,8 @@ const transform: AxiosTransform = {
         }
         //  这里 code，result，message为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
         const {Code: code, result, message} = data;
+
+        checkStatus(code,message)
 
         // 这里逻辑可以根据项目进行修改
         const hasSuccess = data && Reflect.has(data, 'Code') && code === ResultEnum.SUCCESS;

@@ -165,14 +165,17 @@ export default defineComponent({
           ...result.wmconfig
         }
         state.form.auto = result.wmconfig.auto == 1
-        state.form.fontcolor = ('#' + (result.wmconfig.fontcolor).toString(16)).padEnd(7, '0')
+        state.form.fontcolor = ('#' + (result.wmconfig.fontcolor).toString(16).padStart(6, '0'))
+        console.log(state.form.fontcolor)
         state.checkeds = result.array
       } else {
         message.info('该组或用户尚未设置水印')
-        // state.form = {
-        //   ...state.form,
-        //   ...presetForm
-        // }
+        state.form = {
+          ...state.form,
+          ...presetForm
+        }
+        state.form.userid = ~~props.uid
+        state.form.groudid = ~~props.gid
       }
     }
 

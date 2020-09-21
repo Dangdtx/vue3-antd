@@ -21,7 +21,7 @@ export default defineComponent({
   name: 'terminal',
   components: {TreeData, SplitPanel, TableData},
   setup() {
-    const selectedId = ref('1') // 部门ID
+    const selectedId = ref('') // 策略ID
     const state = reactive({
       selectedNames: {
         name: '',

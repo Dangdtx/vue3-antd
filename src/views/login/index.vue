@@ -56,13 +56,16 @@ export default defineComponent({
     const route = useRoute()
 
     const handleSubmit = async () => {
+      const {user, password} = state.formInline
+      if(user.trim() == '' || password.trim() == '') return message.warning('用户名或密码不能为空！')
       const hide = message.loading('登录中...', 0)
       state.loading = true
       console.log(state.formInline)
       const params = {
-        ...state.formInline
+        user,
+        password
       }
-      params.password = md5(params.password)
+      params.password = md5(password)
       const result = await login(params).finally(() => {
         state.loading = false
         message.destroy()

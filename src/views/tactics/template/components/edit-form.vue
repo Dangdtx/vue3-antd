@@ -24,7 +24,7 @@
           <a-checkbox value="128">
             扩展名不匹配禁止加密
           </a-checkbox>
-          <a-checkbox :disabled="form.type == 0" value="64">
+          <a-checkbox :disabled="form.type == 256" value="64">
             使用加密副本
           </a-checkbox>
         </a-checkbox-group>
@@ -129,7 +129,7 @@ export default defineComponent({
       state.form.processid = processid
       state.form.checks = []
       state.form.type = (256 & state.form.policysum) == 0 ? '0' : '256'
-      if (state.form.type == '256') { // 手动加密
+      if (state.form.type == '0') { // 自动加密
         if (0 != (64 & state.form.policysum)) { // 加密副本
           !state.form.checks.includes('64') && state.form.checks.push('64')
         }
@@ -188,6 +188,14 @@ export default defineComponent({
 
     const setAppPolicy = async () => {
       const {processid, processname, externname, checks, type} = state.form
+      const index = checks.findIndex((item: string)  => item == '64')
+      // 自动加密并且没有勾选加密副本
+      if(index == -1 && type == '0') {
+        checks.push('3')
+      }
+      if (type == '256' && index != -1) {
+        checks.splice(index, 1)
+      }
       const params = {
         'id': processid,
         'processname': processname,

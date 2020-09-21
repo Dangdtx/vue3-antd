@@ -53,7 +53,8 @@ export default defineComponent({
   components: {EditForm},
   props: {
     selectedId: {
-      type: [String, Number]
+      type: [String, Number],
+      default: ''
     }
   },
   setup(props: ComponentProps) {

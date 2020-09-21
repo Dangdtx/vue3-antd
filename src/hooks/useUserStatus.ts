@@ -15,7 +15,7 @@ export function setIsLock(value: boolean) {
  */
 export function useUserLeave() {
 
-    const initTime = 60 * 60
+    const initTime = 60 * 30
     const route = useRoute()
     let timer
     // 锁屏倒计时

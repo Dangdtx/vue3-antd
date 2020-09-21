@@ -173,6 +173,8 @@ export default defineComponent({
     // 添加行
     const addRow = (node) => {
       const pos = getPosLength(node) - 1
+      console.log(pos, '长度')
+
       if (pos == 1) {
         usePolicyOperation({
           title: '策略名称',
@@ -203,16 +205,22 @@ export default defineComponent({
           id: node.eventKey,
           defaultValue: node.title,
           label: '策略名称',
-          reqMethod: policySet
-        }, (name) => initData())
+          reqMethod: policySet,
+          callback: (res: any): void => {
+            if (res.Code == 1) initData()
+          }
+        })
       } else if (pos == 3) {
         usePolicyOperation({
           title: '加密分类',
           id: node.eventKey,
           defaultValue: node.title,
           label: '类型名称',
-          reqMethod: moduleSet
-        }, (name) => initData())
+          reqMethod: moduleSet,
+          callback: (res: any): void => {
+            if (res.Code == 1) initData()
+          }
+        })
       }
     }
 

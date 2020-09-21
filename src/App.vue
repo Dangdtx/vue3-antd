@@ -1,12 +1,12 @@
 <template>
   <config-provider v-show="lockTime > 0 || unLockLogin" :locale="zhCN">
     <router-view v-slot="{ Component }">
-      <transition name="zoom-fade">
-        <component :is="Component" />
-      </transition>
+      <component :is="Component"/>
     </router-view>
   </config-provider>
-  <lock-screen v-model:un-lock-login="unLockLogin" v-model:lock-time="lockTime" v-if="lockTime <= 0 || unLockLogin" />
+  <transition name="slide-up">
+    <lock-screen v-model:un-lock-login="unLockLogin" v-model:lock-time="lockTime" v-if="lockTime <= 0 || unLockLogin"/>
+  </transition>
 </template>
 
 <script lang="ts">
@@ -35,4 +35,12 @@ export default defineComponent({
 
 <style lang="scss">
 @import "~@/styles/global.scss";
+
+.slide-up-enter-active, .slide-up-leave-active {
+  transition: transform 1s ease-out;
+}
+
+.slide-up-enter-from, .slide-up-leave-to {
+  transform: translateY(-100%);
+}
 </style>

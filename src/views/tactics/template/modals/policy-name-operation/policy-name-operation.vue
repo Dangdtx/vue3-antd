@@ -75,6 +75,7 @@ export default defineComponent({
     })
     const handleSubmit = async () => {
       console.log(state.formInline)
+      console.log(props, '接受到的')
       state.loading = true
       const res = await props.reqMethod(state.formInline).finally(() => state.loading = false)
       if (res.Code == 1) {

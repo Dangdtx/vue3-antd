@@ -63,34 +63,15 @@ export default defineComponent({
         "username": '',
         "cname": '',
         "depid": '',
-        "needKeylogin": 0 as boolean | number | string,
-        "notneedkey": 0 as boolean | number | string,
-        "status": 0 as boolean | number | string,
+        "needKeylogin": false as boolean,
+        "notneedkey": false as boolean,
+        "status": false as boolean,
         "tel": '',
         "userpri": '',
         "description": ''
       },
       infoObj: {} as any
     })
-
-    const formatKeys = {
-      cname: '终端别名',
-      pid: '终端序列码',
-      ip: 'IP地址',
-      mac: 'MAC地址',
-      versions: '版本号',
-      offlinefromtime: '离线时间'
-    }
-
-    // cname: "QZ-PC"
-    // departmentid: 1
-    // ip: "192.168.102.196"
-    // isapproved: 1
-    // lastloginuser: "h1"
-    // loginuserid: 1
-    // offlinefromtime: 1590051918000
-    // pid: "051914399C5C8E881B16"
-    // versions: "6.0.4.128"
 
     const initData = async () => {
       const res = await userBase({}, attrs.uid)
@@ -109,21 +90,20 @@ export default defineComponent({
 
     const saveChange = async () => {
       const {needKeylogin, notneedkey, status} = state.form
-      state.form.needKeylogin = needKeylogin ? 1 : 0
-      state.form.notneedkey = notneedkey ? 1 : 0
-      state.form.status = status ? 0 : 1
-
       const params = {
         id: '',
         cname: '',
         tel: '',
-        needKeylogin: '',
-        notneedkey: '',
-        status: '',
+        needKeylogin: 0,
+        notneedkey: 0,
+        status: 0,
         description: '',
       }
-
       Object.keys(params).forEach(key => params[key] = state.form[key])
+
+      params.needKeylogin = needKeylogin ? 1 : 0
+      params.notneedkey = notneedkey ? 1 : 0
+      params.status = status ? 0 : 1
 
       const res = await userSave(params, attrs.uid)
       if (res.Code == 1) {
@@ -138,7 +118,6 @@ export default defineComponent({
       ...toRefs(state),
       formCol,
       initData,
-      formatKeys,
       saveChange
     }
   }

@@ -15,6 +15,7 @@
         <a-popconfirm
             v-if="dataList.length"
             title="您确定要删除吗?"
+            placement="leftTop"
             @confirm="delDept(record)"
         >
           <a>删除</a>

@@ -37,7 +37,7 @@
             <user-outlined/>
           </template>
         </a-avatar>
-        <div class="username">{{ username }}</div>
+        <div class="username">{{ loginForm.user }}</div>
         <a-input-search
             v-model:value="loginForm.password"
             type="password"
@@ -73,7 +73,7 @@
 
 <script lang="ts">
 import {defineComponent, onMounted, reactive, toRefs, computed} from 'vue'
-import {Avatar} from 'ant-design-vue'
+import {Avatar, message} from 'ant-design-vue'
 import {
   LockOutlined,
   UnlockOutlined,
@@ -87,6 +87,8 @@ import {useRouter, useRoute} from "vue-router";
 import {useUserOnline} from '@/hooks/useUserStatus'
 import {useTime} from '@/hooks/useTime'
 import {setIsLock} from '@/hooks/useUserStatus'
+import {login} from "@/api/sys/user";
+import md5 from 'blueimp-md5'
 
 interface Battery {
   charging: boolean; // 当前电池是否正在充电
@@ -126,9 +128,8 @@ export default defineComponent({
     const route = useRoute()
 
     const state = reactive({
-      username: localStorage.getItem('username') || '',
       loginForm: {
-        username: localStorage.getItem('username') ?? 'admin',
+        user: localStorage.getItem('username') ?? 'admin',
         password: '',
       },
       battery: {
@@ -194,16 +195,24 @@ export default defineComponent({
     })
 
     // 登录
-    const onLogin = () => {
-      console.log('登录')
-      emit('update:un-lock-login', false)
-      emit('update:lock-time', 60 * 10)
-      setIsLock(false)
+    const onLogin = async () => {
+      const params = {...state.loginForm}
+      params.password = md5(params.password)
+      const result = await login(params)
+      if (result.Code == 1) {
+        message.success('登录成功！')
+        emit('update:un-lock-login', false)
+        emit('update:lock-time', 60 * 30)
+        setIsLock(false)
+        localStorage.setItem('username', params.user)
+      } else {
+        message[result.type](result.message || '登录失败')
+      }
     }
 
     const nav2login = () => {
       emit('update:un-lock-login', false)
-      emit('update:lock-time', 60 * 10)
+      emit('update:lock-time', 60 * 30)
       router.replace({
         path: '/login',
         query: {
@@ -240,7 +249,7 @@ export default defineComponent({
 
   &.unLockLogin {
     background-color: rgba(25, 28, 34, 0.88);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(7px);
   }
 
   .login-box {
