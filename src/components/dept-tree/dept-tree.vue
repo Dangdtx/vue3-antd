@@ -5,6 +5,7 @@
         v-model:expanded-keys="expandedKeys"
         :auto-expand-parent="autoExpandParent"
         :defaultSelectedKeys="selectedKeys"
+        :loadedKeys="loadedKeys"
         :tree-data="treeData"
         :load-data="onLoadData"
         @expand="onExpand"
@@ -12,7 +13,7 @@
     >
       <template v-slot:title="node">
         {{ node.title }}
-        <operate-row v-if="!hideOperate" @delete="deleteRow(node)" :hide-edit="true" @add="addRow(node)"
+        <operate-row v-if="!hideOperate" @delete="deleteRow(node)" :hide-del="getPosLength(node) < 3" :hide-edit="true" @add="addRow(node)"
                      @edit="editRow(node)"/>
       </template>
     </a-tree>
@@ -58,12 +59,11 @@ export default defineComponent({
   setup(props, context: SetupContext) {
     //事件主线
     const {refreshTree} = useEventbus()
-    const route = useRoute()
-    const router = useRouter()
 
     const state = reactive({
       expandedKeys: [props.rootTreeOption.key],
       autoExpandParent: true,
+      loadedKeys: [],
       checkedKeys: [],
       selectedKeys: [props.rootTreeOption.key],
       treeData: [
@@ -71,6 +71,7 @@ export default defineComponent({
           title: '公司',
           key: '1',
           scopedSlots: {title: 'title'},
+          isLeaf: false,
           children: [],
           ...props.rootTreeOption
         }
@@ -95,6 +96,7 @@ export default defineComponent({
 
     // 初始化树
     const initDeptTree = async () => {
+      state.loadedKeys = []
       state.treeData[0].children = await getDeptTree(state.treeData[0].key)
       state.expandedKeys = [props.rootTreeOption.key]
       state.autoExpandParent = false
@@ -105,9 +107,10 @@ export default defineComponent({
     onMounted(() => {
       refreshTree(() => {
         // todo
-        router.push({
-          path: '/redirect' + unref(route).fullPath,
-        })
+        // router.push({
+        //   path: '/redirect' + unref(route).fullPath,
+        // })
+        initDeptTree()
       })
       initDeptTree()
     })
@@ -115,12 +118,16 @@ export default defineComponent({
     const onLoadData = (treeNode) => {
       return new Promise(resolve => {
         if (treeNode.dataRef.children) {
+          treeNode.dataRef.isLeaf = true
           console.log(treeNode.dataRef.children, '果然爱')
           resolve();
           return;
         }
         (async () => {
+          // treeNode.vcTreeNode.dataRef.isLeaf = false
+          treeNode.dataRef.isLeaf = true
           treeNode.dataRef.children = await getDeptTree(treeNode.eventKey).finally(() => resolve())
+          nextTick(() => treeNode.dataRef.isLeaf = false)
           return resolve();
         })()
         // state.treeData = [...state.treeData];
@@ -143,6 +150,8 @@ export default defineComponent({
       context.emit('selected', node.eventKey.toString())
       state.selectedKeys = selectedKeys;
     }
+    // 获取节点层级
+    const getPosLength = (node): number => node.pos.split('-').length
 
     // 删除行
     const deleteRow = async (node) => {
@@ -166,6 +175,7 @@ export default defineComponent({
     return {
       ...toRefs(state),
       onCheck,
+      getPosLength,
       onSelect,
       onExpand,
       onLoadData,

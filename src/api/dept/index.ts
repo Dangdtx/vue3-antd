@@ -6,15 +6,40 @@ enum Api {
     DeptNew = '/dept/new',
     DeptDel = '/dept/delete',
     DeptUpdate = '/dept/update',
-    DeptModule = '/dept/module',
-    DeptPolicy = '/dept/policy',
-    DeptProc = '/dept/proc',
-    ModuleModules = '/module/modules',
+    DeptPolicy = '/dept/policy', // 部门策略已选中的policy列表
+    DeptProclist = '/dept/proclist', // 部门策略已选中的policy列表
+    DeptPolicyList = '/dept/policylist', // 部门策略中policy列表
+    DeptProc = '/dept/proc', // 部门策略中指定process的详情
+    deptModule = '/dept/module', // 部门策略中指定policy下的已选择的module列表
+    deptModuleList = '/dept/modulelist', // 部门策略中指定policy下的module列表
     deptSetpolicy = '/dept/setpolicy',
     AppByModule = '/app/bymodule',
     DeptChangeprocess = '/dept/changeprocess',
+    DeptSetapprove = '/dept/setapprove', // 设置审批
 }
 
+/**
+ * @description: 设置审批（自动或手动）
+ */
+export function DeptSetapprove(params: any) {
+    return http.request({
+        url: Api.DeptSetapprove,
+        method: 'POST',
+        params,
+    }, {
+        isTransformRequestResult: false
+    });
+}
+/**
+ * @description: 设置审批（自动或手动）
+ */
+export function DeptProclist(params: any) {
+    return http.request({
+        url: Api.DeptProclist,
+        method: 'POST',
+        params,
+    });
+}
 /**
  * @description: 获取部门树
  */
@@ -56,11 +81,21 @@ export function deptPolicy(params: any) {
     });
 }
 /**
+ * @description: 获取部门策略中的policy列表
+ */
+export function DeptPolicyList(params: any) {
+    return http.request({
+        url: Api.DeptPolicyList,
+        method: 'POST',
+        params,
+    });
+}
+/**
  * @description: 部门策略-获取子部门
  */
-export function moduleModules(params: any) {
+export function deptModuleList(params: any) {
     return http.request({
-        url: Api.ModuleModules,
+        url: Api.deptModuleList,
         method: 'POST',
         params,
     });
@@ -70,7 +105,7 @@ export function moduleModules(params: any) {
  */
 export function deptModule(params: any) {
     return http.request({
-        url: Api.DeptModule,
+        url: Api.deptModule,
         method: 'POST',
         params,
     });

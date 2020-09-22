@@ -5,6 +5,7 @@
         :defaultSelectedKeys="selectedKeys"
         v-model:expanded-keys="expandedKeys"
         :auto-expand-parent="autoExpandParent"
+        :loadedKeys="loadedKeys"
         :tree-data="treeData"
         @expand="onExpand"
         @select="onSelect"
@@ -19,7 +20,7 @@
 
 <script lang="ts">
 import {message, Tree} from 'ant-design-vue'
-import {defineComponent, toRefs, SetupContext, reactive, onMounted, unref} from 'vue'
+import {defineComponent, toRefs, SetupContext, reactive, onMounted, unref, nextTick} from 'vue'
 
 import {useDeptNew, useAssignUser} from './modals/useModals'
 import {OperateRow} from '@/components/operate-row'
@@ -62,6 +63,7 @@ export default defineComponent({
     const state = reactive({
       expandedKeys: [props.rootTreeOption.key],
       autoExpandParent: true,
+      loadedKeys: [],
       checkedKeys: ['0'],
       selectedKeys: ['0'],
       treeData: [
@@ -69,6 +71,7 @@ export default defineComponent({
           title: '全局组',
           key: '0',
           scopedSlots: {title: 'title'},
+          isLeaf: false,
           children: [],
           ...props.rootTreeOption
         }
@@ -96,6 +99,7 @@ export default defineComponent({
 
     // 初始化树
     const initDeptTree = async () => {
+      state.loadedKeys = []
       const data = await watermarkGroup({})
       state.treeData[0].children = data.map(item => {
         return {
@@ -104,15 +108,19 @@ export default defineComponent({
           scopedSlots: {title: 'title'}
         }
       })
+      state.expandedKeys = [props.rootTreeOption.key]
       state.autoExpandParent = false
+      state.checkedKeys = []
+      state.selectedKeys = [props.rootTreeOption.key]
     }
 
     onMounted(() => {
       refreshTree(() => {
         // todo
-        router.push({
-          path: '/redirect' + unref(route).fullPath,
-        })
+        // router.push({
+        //   path: '/redirect' + unref(route).fullPath,
+        // })
+        initDeptTree()
       })
       initDeptTree()
     })
@@ -120,12 +128,15 @@ export default defineComponent({
     const onLoadData = (treeNode) => {
       return new Promise(resolve => {
         if (treeNode.dataRef.children) {
+          treeNode.dataRef.isLeaf = true
           console.log(treeNode.dataRef.children, '果然爱')
           resolve();
           return;
         }
         (async () => {
+          treeNode.dataRef.isLeaf = true
           treeNode.dataRef.children = await getDeptTree(treeNode.eventKey)
+          nextTick(() => treeNode.dataRef.isLeaf = false)
           return resolve();
         })()
         // state.treeData = [...state.treeData];

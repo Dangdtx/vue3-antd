@@ -20,6 +20,19 @@
         >
           <a>删除</a>
         </a-popconfirm>
+        <a-dropdown>
+          <a class="ant-dropdown-link" @click="e => e.preventDefault()">更多<DownOutlined /> </a>
+          <template v-slot:overlay>
+            <a-menu>
+              <a-menu-item>
+                <a @click="setApprove(record.id, 0)">部门设置自动审批</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a @click="setApprove(record.id, 1)">部门设置手动审批</a>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
       </a-space>
     </template>
   </a-table>
@@ -28,13 +41,14 @@
 <script lang="ts">
 import {defineComponent, reactive, toRefs, watch, onMounted} from 'vue';
 
-import {message, Popconfirm , Space} from 'ant-design-vue'
+import {message, Popconfirm , Space, Dropdown} from 'ant-design-vue'
+import {DownOutlined} from '@ant-design/icons-vue'
 
 import SplitPanel from '@/components/split-panel/index.vue'
 
 import {useEventbus} from '@/hooks/useEventbus'
 
-import {deptSub,deptDel} from '@/api/dept'
+import {deptSub,deptDel,DeptSetapprove} from '@/api/dept'
 
 const temColumns = [
   {
@@ -53,7 +67,7 @@ const temColumns = [
     title: '操作',
     dataIndex: 'actions',
     fixed: 'right',
-    width: 120,
+    width: 150,
     slots: {customRender: 'actions'}
   }
 ]
@@ -65,7 +79,7 @@ interface ComponentProps {
 
 export default defineComponent({
   name: 'table-data',
-  components: {SplitPanel, [Popconfirm.name]: Popconfirm, ASpace: Space},
+  components: {SplitPanel, [Popconfirm.name]: Popconfirm, ASpace: Space, [Dropdown.name]: Dropdown, DownOutlined},
   props: {
     selectedDeptId: {
       type: [String, Number],
@@ -110,9 +124,20 @@ export default defineComponent({
       }
     }
 
+    // 部门设置审批
+    const setApprove = async (deptID, value) => {
+      const result = await DeptSetapprove({deptID,value})
+      if (result.Code == 1) {
+        message.success('设置成功')
+      } else {
+        message[result.type](result.message || '设置失败')
+      }
+    }
+
     return {
       ...toRefs(state),
       columns,
+      setApprove,
       delDept,
     }
   },

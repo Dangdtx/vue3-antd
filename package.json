@@ -10,8 +10,8 @@
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "test prod gzip": "http-server dist --proxy http://127.0.0.1:8083?dist/index.html --gzip -c-1",
-    "test prod proxy": "http-server dist --proxy http://192.168.102.67:8383"
+    "test prod gzip": "http-server dist --cors --gzip -c-1",
+    "test prod cors": "http-server dist --cors -P http://192.168.102.67:8383"
   },
   "main": "background.js",
   "dependencies": {

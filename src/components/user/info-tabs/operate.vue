@@ -17,7 +17,7 @@ import {Descriptions} from 'ant-design-vue'
 import {clientOperate} from "@/api/client";
 
 export default defineComponent({
-  name: "base-info",
+  name: "operate",
   components: {ADescriptions: Descriptions, ADescriptionsItem: Descriptions.Item},
   setup(props, {attrs}) {
 

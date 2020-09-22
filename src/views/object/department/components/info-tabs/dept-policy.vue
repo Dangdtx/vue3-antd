@@ -8,7 +8,7 @@
             <a-tree
                 style="min-height: 200px"
                 v-model:checkedKeys="checkedKeys"
-                :checkStrictly="true"
+                :checkStrictly="checkStrictly"
                 checkable
                 :tree-data="treeData"
                 @select="selectedTree"
@@ -34,20 +34,20 @@
       </a-divider>
       <a-form-item label="加密方式">
         <a-radio-group v-model:value="form.type" name="type" :disabled="form.policyid == -1">
-          <a-radio :value="0">
+          <a-radio value="0">
             自动加密
           </a-radio>
-          <a-radio :value="256">
+          <a-radio value="256">
             手动加密
           </a-radio>
         </a-radio-group>
       </a-form-item>
       <a-form-item :colon="false" label="  ">
         <a-checkbox-group v-model:value="form.checks" name="checks" :disabled="form.policyid == -1">
-          <a-checkbox :value="64">
+          <a-checkbox value="128">
             扩展名不匹配禁止加密
           </a-checkbox>
-          <a-checkbox :disabled="form.type == 256" :value="128">
+          <a-checkbox :disabled="form.type == 256" value="64">
             使用加密副本
           </a-checkbox>
         </a-checkbox-group>
@@ -77,9 +77,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, reactive, toRefs} from 'vue'
+import {defineComponent, onMounted, reactive, toRefs, nextTick} from 'vue'
 import {Divider, Tree, Spin, message} from 'ant-design-vue'
-import {deptPolicy,deptIdPolicy, moduleModules, deptModule, deptChangeprocess, appByModule, deptProc, deptSetpolicy} from "@/api/dept";
+import {deptPolicy,DeptProclist,DeptPolicyList, deptModuleList, deptModule, deptChangeprocess, appByModule, deptProc, deptSetpolicy} from "@/api/dept";
 
 export default defineComponent({
   name: "dept-policy",
@@ -92,11 +92,12 @@ export default defineComponent({
       currentSelected: '',
       isSelectedTableItem: false,
       appModules: [],
+      checkStrictly: true, // 是否受控
       loading: false,
       treeIsLoad: false, // 树加载状态
       form: {
-        type: -1,
-        checks: [] as number[],
+        type: '',
+        checks: [] as string[],
         applicationid: '',
         classid: '',
         departmentid: '',
@@ -127,34 +128,39 @@ export default defineComponent({
 
     onMounted(async () => {
       state.treeIsLoad = true
-      const module = await deptModule({deptID: attrs.deptId})
+      // 部门策略中policy列表
+      const policyList = await DeptPolicyList({deptID: attrs.deptId})
+      // 部门策略已选中的policy列表
       const policy = await deptPolicy({deptID: attrs.deptId})
-      const modules = await moduleModules({})
-      const result = await deptIdPolicy({}, attrs.deptId).finally(() => state.treeIsLoad = false)
+      // 部门策略中已选中的module列表
+      const module = await deptModule({deptID: attrs.deptId})
+      // const result = await deptIdPolicy({}, attrs.deptId).finally(() => state.treeIsLoad = false)
 
       // 选中的
       const moduleSelected = module.map(item => item.applicationid)
-      const policySelected = module.map(item => item.classid)
+      const policySelected = policy.map(item => item.classid)
 
       state.checkedKeys = [...moduleSelected, ...policySelected]
-      state.treeData = result.map(item => {
+      const promises = policyList.map(async item => {
         const obj = {
           title: item.classname,
           key: item.classid,
           children: []
         }
-        const children = modules.filter(n => n.classid == item.classid)
-        obj.children = children.map(n => ({
+        const modules = await deptModuleList({policy: item.classid ,deptID: attrs.deptId})
+        obj.children = modules.map(n => ({
           title: n.applicationname,
           key: n.applicationid,
         }))
         return obj
       })
+      const arr = await Promise.all(promises).finally(() => state.treeIsLoad = false)
+      state.treeData = arr as any
     })
 
     const getAppModule = async (applicationid) => {
       state.loading = true
-      const result = await appByModule({id: applicationid}).finally(() => state.loading = false)
+      const result = await DeptProclist({module : applicationid, deptID: attrs.deptId}).finally(() => state.loading = false)
       state.appModules = result
     }
 
@@ -178,6 +184,7 @@ export default defineComponent({
         "deptID":attrs.deptId,
         "param": !node.checked
       }
+      state.checkStrictly = false
       deptSetpolicy(params)
     }
 
@@ -187,16 +194,16 @@ export default defineComponent({
         ...state.form,
         ...result
       }
-      state.form.type = -1
+      state.form.type = ''
       state.form.checks = []
-      state.form.type = 0 == (256 & state.form.policysum) ? 0 : 256
-      if (state.form.type == 256) {
-        if (0 != (64 & state.form.policysum)) {
-          !state.form.checks.includes(64) && state.form.checks.push(64)
+      state.form.type = (256 & state.form.policysum) == 0 ? '0' : '256'
+      if (state.form.type == '0') { // 自动加密
+        if (0 != (64 & state.form.policysum)) { // 加密副本
+          !state.form.checks.includes('64') && state.form.checks.push('64')
         }
       }
-      if (0 != (128 & state.form.policysum)) {
-        !state.form.checks.includes(128) && state.form.checks.push(128)
+      if (0 != (128 & state.form.policysum)) { // 扩展名不匹配禁止加密
+        !state.form.checks.includes('128') && state.form.checks.push('128')
       }
     }
 

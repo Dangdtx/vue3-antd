@@ -14,15 +14,8 @@ import {deptInfo} from "@/api/dept";
 export default defineComponent({
   name: 'sub-dept',
   components: {DeptTree, SplitPanel, TableData},
-   async setup(props, {attrs}) {
+  setup(props, {attrs}) {
     const selectedDeptId = ref(attrs.deptId) // 部门ID
-
-     const {dname, id} = await deptInfo({}, attrs.deptId)
-
-    const treeOption = ref({
-      title: dname,
-      key: id
-    })
 
     // 选择的部门id
     const selectedTree = (value) => {
@@ -32,7 +25,6 @@ export default defineComponent({
     return {
       selectedDeptId,
       selectedTree,
-      treeOption,
     }
   },
 });

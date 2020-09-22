@@ -1,35 +1,67 @@
 <template>
   <div class="client-info">
-    <a-descriptions size="small" :column="2">
-      <!--      <a-descriptions-item v-for="(value, key) in formatKeys" :key="key" :label="value">-->
-      <!--        {{ infoObj[key] }}-->
-      <!--      </a-descriptions-item>-->
-      <a-descriptions-item label="终端别名">
-        {{ infoObj.cname }}
-      </a-descriptions-item>
-    </a-descriptions>
+    <a-radio-group v-model:value="value">
+      <a-radio @click.prevent="onChange('自动审批', 0)" :value="0">
+        自动审批
+      </a-radio>
+      <a-radio @click.prevent="onChange('手动审批', 1)" :value="1">
+        手动审批
+      </a-radio>
+    </a-radio-group>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue'
-import {Descriptions} from 'ant-design-vue'
-import {clientOperate} from "@/api/client";
+import {defineComponent, createVNode, reactive, toRefs} from 'vue'
+import {message, Radio, Modal} from 'ant-design-vue'
+import {ExclamationCircleOutlined} from '@ant-design/icons-vue'
+import {DeptSetapprove} from "@/api/dept";
 
 export default defineComponent({
-  name: "base-info",
-  components: {[Descriptions.name]: Descriptions, [Descriptions.Item.name]: Descriptions.Item},
+  name: "operate",
+  components: {[Radio.name]: Radio, [Radio.Group.name]: Radio.Group},
   setup(props, {attrs}) {
-
-    const infoObj = ref({})
-
-    onMounted(async () => {
-      infoObj.value = await clientOperate({}, attrs.pid)
-      console.log(infoObj.value)
+    const state = reactive({
+      value: 0
     })
 
+    const onChange = async (title, value) => {
+
+      Modal.confirm({
+        title: `确定要将所有人设置为${title}吗?`,
+        icon: createVNode(ExclamationCircleOutlined),
+        onOk: async () => {
+          const result = await DeptSetapprove({deptID: attrs.deptId, value})
+          return new Promise( (resolve, reject) => {
+            if (result.Code == 1) {
+              message.success('设置成功')
+              state.value = value
+              resolve()
+            } else {
+              message[result.type](result.message || '设置失败')
+              reject()
+            }
+          }).catch(() => console.log('Oops errors!'));
+
+          // return new Promise( (resolve, reject) => {
+          //   DeptSetapprove({deptID: attrs.deptId, value: state.value}).then(result => {
+          //     if (result.Code == 1) {
+          //       message.success('设置成功')
+          //       resolve
+          //     } else {
+          //       message[result.type](result.message || '设置失败')
+          //       reject
+          //     }
+          //   })
+          // }).catch(() => console.log('Oops errors!'));
+
+        }
+      })
+    }
+
     return {
-      infoObj,
+      ...toRefs(state),
+      onChange
     }
   }
 })

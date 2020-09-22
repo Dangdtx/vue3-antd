@@ -63,6 +63,21 @@ import {useDomWidth} from '@/hooks/useDomWidth'
 
 import {sysConfig, sysSetconfig} from '@/api/sys/config'
 
+// AppAutoStart: 1
+// ApproveOption: 0
+// ApproverConfig: 0
+// DecryAll: 0
+// DecryMe: 1
+// EncryBackup: 0
+// FileBackup: 0
+// LimitTime: 3
+// NeedReson: 1
+// OfflineDecryAll: 1
+// ServerJG: 0
+// SystemConfig: 0
+// TrayLoadTime: 5
+// TrustAll: 0
+// Xlsbackdays: 2
 const configOptions = {
   EncryBackup: '手动加密备份文件',
   FileBackup: '解密申请备份文件',
@@ -71,10 +86,12 @@ const configOptions = {
   NeedReson: '手动解密审批需要填写理由',
   TrustAll: '允许所有部门文件相互打开',
   DecryMe: '允许用户申请解密自己的文件',
+  DecryAll: '允许用户申请解密所有文件',
   OfflineDecryAll: '允许用户离线解密所有的文件',
   SystemConfig: '允许域用户客户端自动登录',
   ApproveOption: '可指定下级审批人',
   ServerJG: '终端加固',
+  ApproverConfig: '解密申请时显示部门所有审批人',
 }
 
 export default defineComponent({
@@ -95,6 +112,7 @@ export default defineComponent({
         EncryBackup: false,
         FileBackup: false,
         NeedReson: false,
+        applyAll: false,
         OfflineDecryAll: false,
         ServerJG: false,
         AskWhenDel: false,
