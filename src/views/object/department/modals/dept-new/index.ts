@@ -10,10 +10,11 @@ let wrapperEl: HTMLElement | null = null
 export const useDeptNew = (props: ModalProps) => {
 
     const bodyClick = () => {
-        ModalComponentInstance && wrapperEl && document.body.removeChild(wrapperEl);
+        ModalComponentInstance && wrapperEl && ModalComponentInstance.unmount(wrapperEl);
         document.body.removeEventListener('click', bodyClick);
         document.body.removeEventListener('scroll', bodyClick);
         ModalComponentInstance = null;
+        wrapperEl?.remove()
     }
 
     bodyClick()

@@ -27,7 +27,7 @@
             <table-data @reload="initData" :params="{user: $attrs.uid,type: 2}" @load="tableLoaded(2, $event)" />
           </a-tab-pane>
         </a-tabs>
-        <user-policy-modal  @changedept-success="initData" :check-list="checkList" :all-type="allType" :type="activeKey" v-bind="$attrs" />
+        <user-policy-modal @changedept-success="initData" :check-list="checkList" :all-type="allType" :type="activeKey" v-bind="$attrs" />
       </a-form-item>
       <a-form-item>
         <a-checkbox v-model:checked="allType">
@@ -64,12 +64,7 @@ export default defineComponent({
 
     // 保存移动储存控制设置
     const saveDiskControl = async (uid) => {
-      const result = await userDisk({user: uid, type: state.form.type})
-      if (result.Code == 1) {
-        message.success('操作成功')
-      } else {
-        message[result.type](result.message || '操作失败')
-      }
+      await userDisk({user: uid, type: state.form.type})
     }
 
     // 获取用户策略

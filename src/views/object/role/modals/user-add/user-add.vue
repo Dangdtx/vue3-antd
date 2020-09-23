@@ -160,12 +160,7 @@ export default defineComponent({
       state.formInline.notneddkey = state.formInline.notneddkey ? 1 : 0
       state.formInline.status = state.formInline.status ? 0 : 1
       state.formInline.password = md5(state.formInline.password)
-      const res = await userAdd(state.formInline).finally(() => state.loading = false)
-      if (res.Code == 1) {
-        message.success('添加成功')
-      } else {
-        message[res.type](res.message || '添加失败')
-      }
+      await userAdd(state.formInline).finally(() => state.loading = false)
       state.modalVisible = false
       // 通知刷新表格
       toRefreshTable()

@@ -30,6 +30,8 @@ export function sysSetconfig(params) {
     params,
   }, {
     isParseToJson: false,
-    isTransformRequestResult: false
+    isShowMessage: true,
+    successMessageText: '配置成功',
+    errorMessageText: '操作失败'
   });
 }

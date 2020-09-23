@@ -16,6 +16,12 @@ export interface RequestOptions {
   isTransformRequestResult?: boolean;
   // 是否解析成JSON
   isParseToJson?: boolean;
+  // 是否提示自定义信息
+  isShowMessage?: boolean;
+  // 成功的文本信息
+  successMessageText?: string;
+  // 错误的文本信息
+  errorMessageText?: string;
   // 是否加入url
   joinPrefix?: boolean;
   // 接口地址， 不填则使用默认apiUrl

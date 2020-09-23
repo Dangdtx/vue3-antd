@@ -35,12 +35,5 @@ export default defineComponent({
 
 <style lang="scss">
 @import "~@/styles/global.scss";
-
-.slide-up-enter-active, .slide-up-leave-active {
-  transition: transform 1s ease-out;
-}
-
-.slide-up-enter-from, .slide-up-leave-to {
-  transform: translateY(-100%);
-}
+@import "~@/styles/common.scss";
 </style>

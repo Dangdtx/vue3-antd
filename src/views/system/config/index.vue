@@ -144,12 +144,7 @@ export default defineComponent({
           params[key] = state.formInline[key] ? 1 + '' : 0 + ''
         }
       }
-      const result = await sysSetconfig({config: JSON.stringify(params)})
-      if (result.Code == 1) {
-        message.success('配置成功')
-      } else {
-        message[result.type](result.message || '操作失败')
-      }
+      await sysSetconfig({config: JSON.stringify(params)})
     }
 
     return {

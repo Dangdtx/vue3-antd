@@ -12,6 +12,7 @@ enum Api {
     userDeptuser = '/user/deptuser',
     userSavedecryptpolicy = '/user/savedecryptpolicy',
     userAdd = '/user/add',
+    userUsedefaultpolicy = '/user/usedefaultpolicy',
     userPolicylist = '/user/policylist', // 用户权限列表
     userGetdefaultpolicy = '/user/getdefaultpolicy', // 获取默认用户权限
     userSetdefaultpolicy = '/user/setdefaultpolicy', // 设置默认用户权限
@@ -28,7 +29,7 @@ export function userRoleuser(params: any, deptId) {
     });
 }
 /**
- * @description: 设置默认用户权限
+ * @description: 设置默认用户策略
  */
 export function userSetdefaultpolicy(params: any) {
     return http.request({
@@ -36,7 +37,23 @@ export function userSetdefaultpolicy(params: any) {
         method: 'POST',
         params,
     }, {
-        isTransformRequestResult: false
+        isShowMessage: true,
+        successMessageText: '设置成功',
+        errorMessageText: '操作失败'
+    });
+}
+/**
+ * @description: 应用默认用户策略
+ */
+export function userUsedefaultpolicy(params: any) {
+    return http.request({
+        url: Api.userUsedefaultpolicy,
+        method: 'POST',
+        params,
+    }, {
+        isShowMessage: true,
+        successMessageText: '应用成功',
+        errorMessageText: '操作失败'
     });
 }
 /**
@@ -68,7 +85,9 @@ export function userAdd(params: any) {
         method: 'POST',
         params,
     }, {
-        isTransformRequestResult: false
+        isShowMessage: true,
+        successMessageText: '添加成功',
+        errorMessageText: '添加失败'
     });
 }
 /**
@@ -92,7 +111,9 @@ export function userDisk(params: any) {
         method: 'POST',
         params,
     }, {
-        isTransformRequestResult: false
+        isShowMessage: true,
+        successMessageText: '操作成功',
+        errorMessageText: '操作失败'
     });
 }
 /**

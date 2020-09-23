@@ -25,7 +25,22 @@ const transform: AxiosTransform = {
      * @description: 处理请求数据
      */
     transformRequestData: (res: AxiosResponse<Result>, options: RequestOptions) => {
-        const {isTransformRequestResult, isParseToJson} = options;
+        const {isTransformRequestResult, isParseToJson, isShowMessage, successMessageText, errorMessageText} = options;
+
+        const {data} = res;
+        //  这里 code，result，message为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
+        const {Code: code, result, message} = data;
+
+        checkStatus(code,message)
+
+        // 是否显示自定义信息提示
+        if (isShowMessage) {
+            if (data.Code == 1) {
+                Message.success(successMessageText || data.message)
+            } else {
+                Message[data.type](errorMessageText || data.message || '未知错误！')
+            }
+        }
         // 不进行任何处理，直接返回
         // 用于页面代码可能需要直接获取code，data，message这些信息时开启
         if (!isTransformRequestResult) {
@@ -34,15 +49,10 @@ const transform: AxiosTransform = {
         // 错误的时候返回
         const errorResult = undefined;
 
-        const {data} = res;
         if (!data) {
             // return '[HTTP] Request has no return value';
             return errorResult;
         }
-        //  这里 code，result，message为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
-        const {Code: code, result, message} = data;
-
-        checkStatus(code,message)
 
         // 这里逻辑可以根据项目进行修改
         const hasSuccess = data && Reflect.has(data, 'Code') && code === ResultEnum.SUCCESS;

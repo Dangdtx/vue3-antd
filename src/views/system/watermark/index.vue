@@ -7,12 +7,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, Transition} from 'vue'
+import {defineComponent} from 'vue'
 import {useRoute} from "vue-router";
 
 export default defineComponent({
   name: "department",
-  components: {Transition},
   setup() {
 
     return {

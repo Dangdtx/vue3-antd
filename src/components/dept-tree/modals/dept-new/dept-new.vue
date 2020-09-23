@@ -1,5 +1,4 @@
 <template>
-  <div ref="rootEl">
     <a-modal
         v-model:visible="modalVisible"
         title="新建部门"
@@ -44,12 +43,11 @@
         </a-form-item>
       </a-form>
     </a-modal>
-  </div>
 </template>
 
 <script lang="ts">
 import {Modal as AModal, Input, Form as AForm, Button as AButton, Space as ASpace, message} from 'ant-design-vue'
-import {defineComponent, ref, toRefs, reactive, onMounted} from 'vue'
+import {defineComponent, ref, toRefs, reactive, SetupContext} from 'vue'
 import {ModalProps} from './props'
 import {deptNew} from "@/api/dept/";
 import {useEventbus} from "@/hooks/useEventbus";
@@ -64,7 +62,7 @@ export default defineComponent({
       type: String
     }
   },
-  setup(props: ModalProps) {
+  setup(props: ModalProps, ctx: SetupContext) {
     const {toRefreshTree, toRefreshTable} = useEventbus()
     const state = reactive({
       modalVisible: true,

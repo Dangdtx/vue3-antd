@@ -119,7 +119,9 @@ export function deptChangeprocess(params: any) {
         method: 'POST',
         params,
     }, {
-        isTransformRequestResult: false
+        isShowMessage: true,
+        successMessageText: '修改成功',
+        errorMessageText: '修改失败'
     });
 }
 /**
@@ -227,6 +229,8 @@ export function deptUpdate(params: any) {
         method: 'POST',
         params,
     }, {
-        isTransformRequestResult: false
+        isShowMessage: true,
+        successMessageText: '修改成功',
+        errorMessageText: '修改失败'
     });
 }

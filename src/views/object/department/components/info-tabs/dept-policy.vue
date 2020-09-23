@@ -10,6 +10,8 @@
                 v-model:checkedKeys="checkedKeys"
                 :checkStrictly="checkStrictly"
                 checkable
+                auto-expand-parent
+                treeDefaultExpandAll
                 :tree-data="treeData"
                 @select="selectedTree"
                 @check="checkTreeNode"
@@ -56,11 +58,11 @@
         进程属性
       </a-divider>
       <a-form-item label="进程名称">
-        <a-textarea v-model:value="form.processname" placeholder="进程名称">
+        <a-textarea v-model:value="form.processname" disabled placeholder="进程名称">
         </a-textarea>
       </a-form-item>
       <a-form-item :label="form.checks.includes(128) ? '加密副本' : '扩展名'">
-        <a-textarea v-model:value="form.processextern" placeholder="扩展名">
+        <a-textarea v-model:value="form.processextern" disabled placeholder="扩展名">
         </a-textarea>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 19, offset: 5 }">
@@ -126,6 +128,9 @@ export default defineComponent({
       }
     ]
 
+    // 获取到真实的key
+    const getKey = (nodeKey) => nodeKey.replace(/appid-|classid-/g, '')
+
     onMounted(async () => {
       state.treeIsLoad = true
       // 部门策略中policy列表
@@ -137,25 +142,26 @@ export default defineComponent({
       // const result = await deptIdPolicy({}, attrs.deptId).finally(() => state.treeIsLoad = false)
 
       // 选中的
-      const moduleSelected = module.map(item => item.applicationid)
-      const policySelected = policy.map(item => item.classid)
+      const moduleSelected = module.map(item => 'appid-' + item.applicationid)
+      const policySelected = policy.map(item => 'classid-' + item.classid)
 
       state.checkedKeys = [...moduleSelected, ...policySelected]
+      console.log(state.checkedKeys, '嗯哼 ')
       const promises = policyList.map(async item => {
         const obj = {
-          title: item.classname,
-          key: item.classid,
+          title: item.classname + item.classid,
+          key: 'classid-' + item.classid,
           children: []
         }
         const modules = await deptModuleList({policy: item.classid ,deptID: attrs.deptId})
         obj.children = modules.map(n => ({
-          title: n.applicationname,
-          key: n.applicationid,
+          title: n.applicationname + n.applicationid,
+          key: 'appid-' + n.applicationid,
         }))
         return obj
       })
-      const arr = await Promise.all(promises).finally(() => state.treeIsLoad = false)
-      state.treeData = arr as any
+      const arr: any = await Promise.allSettled(promises).finally(() => state.treeIsLoad = false)
+      state.treeData = arr.filter(item => item.status == "fulfilled").map(item => item.value)
     })
 
     const getAppModule = async (applicationid) => {
@@ -171,7 +177,7 @@ export default defineComponent({
       state.form.processid = ''
       if (node.pos.split('-').length > 2) {
         state.currentSelected = node.vcTreeNode.dataRef.title + '-->' + node.dataRef.title
-        applicationid = node.dataRef.key
+        applicationid = node.eventKey.replace(/appid-|classid-/g, '')
         getAppModule(applicationid)
       }
     }
@@ -179,12 +185,59 @@ export default defineComponent({
     const checkTreeNode = (checkedKeys, info) => {
       const {node} = info
       const params = {
-        "id": node.dataRef.key,
+        "id": node.eventKey.replace(/appid-|classid-/g, ''),
         "type": node.pos.split('-').length > 2 ? 'module' : 'policy',
         "deptID":attrs.deptId,
         "param": !node.checked
       }
-      state.checkStrictly = false
+      if (node.eventKey.includes('appid')) {
+        console.log(node.vcTreeNode, 'node.vcTreeNode')
+        if (!node.checked && !node.vcTreeNode.checked) {
+          (Array.isArray(state.checkedKeys) ? state.checkedKeys : (state.checkedKeys as any).checked).push(node.vcTreeNode.eventKey)
+          // node.vcTreeNode.checked = true
+          const params = {
+            "id": getKey(node.vcTreeNode.eventKey),
+            "type": 'policy',
+            "deptID":attrs.deptId,
+            "param": true
+          }
+          deptSetpolicy(params)
+        }
+      }
+      console.log(node, '节点')
+      // state.checkedKeys = Array.isArray(checkedKeys) ? checkedKeys : checkedKeys.checked
+      if (node.eventKey.includes('classid')) {
+        // 如果选中
+        if (!node.checked) {
+          node.children.forEach(item => item.checked = true)
+          const keys = node.children.map(item => item.key)
+          Array.isArray(state.checkedKeys) ? state.checkedKeys.push(...keys) :  (state.checkedKeys as any).checked.push(...keys)
+          // state.checkStrictly = false
+          keys.forEach(key => {
+            const params = {
+              "id": key.replace(/appid-|classid-/g, ''),
+              "type": 'module',
+              "deptID":attrs.deptId,
+              "param": !node.checked
+            }
+            deptSetpolicy(params)
+          })
+        } else {
+          node.children.forEach(item => item.checked = false)
+          const keys = node.children.map(item => item.key)
+          state.checkedKeys = Array.isArray(state.checkedKeys) ? state.checkedKeys.filter(key => !keys.includes(key)) :  (state.checkedKeys as any).checked.filter(key => !keys.includes(key))
+          // state.checkStrictly = false
+          keys.forEach(key => {
+            const params = {
+              "id": getKey(key),
+              "type": 'module',
+              "deptID":attrs.deptId,
+              "param": !node.checked
+            }
+            deptSetpolicy(params)
+          })
+        }
+      }
       deptSetpolicy(params)
     }
 
@@ -210,18 +263,20 @@ export default defineComponent({
     // 提交修改
     const handleSubmit = async () => {
       const {processid, checks, type} = state.form
-
+      const index = checks.findIndex((item: string)  => item == '64')
+      // 自动加密并且没有勾选加密副本
+      if(index == -1 && type == '0') {
+        checks.push('3')
+      }
+      if (type == '256' && index != -1) {
+        checks.splice(index, 1)
+      }
       const params = {
         "process": processid,
         "department": attrs.deptId,
         "sum": checks.reduce((acc, curr) => acc + ~~curr, ~~type)
       }
-      const res = await deptChangeprocess(params)
-      if (res.Code == 1) {
-        message.success('修改成功！')
-      } else {
-        message.info(res.message)
-      }
+      await deptChangeprocess(params)
       getAppModule(applicationid)
       console.log(state.form)
     }
@@ -234,7 +289,7 @@ export default defineComponent({
         e.preventDefault();
         e.stopPropagation()
         state.isSelectedTableItem = true
-        getDeptProc( record.processid)
+        getDeptProc(record.processid)
       }
     })
 

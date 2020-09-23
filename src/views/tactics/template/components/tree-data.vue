@@ -69,16 +69,19 @@ export default defineComponent({
       ],
     })
 
+    // 获取树key
+    const getKey = (key) => key.replace(/classid-|appid-/g, '')
+
     // 获取部门树
     const getDeptTree = async (fatherId: string | number) => {
       const param = {
-        id: fatherId
+        id: getKey(fatherId)
       }
       const data = await moduleBypolicy(param)
       return data.filter(n => n.id != 1).map(item => {
         return {
           title: item.applicationname,
-          key: item.applicationid.toString(),
+          key: 'appid-' + item.applicationid,
           scopedSlots: {title: 'title'},
           isLeaf: true,
           ...item
@@ -92,7 +95,7 @@ export default defineComponent({
       const children = state.treeData[0].children = data.map(item => {
         return {
           title: item.classname,
-          key: item.classid + '',
+          key: 'classid-' + item.classid,
           scopedSlots: {title: 'title'},
           children: [],
           ...item
@@ -114,7 +117,7 @@ export default defineComponent({
           return;
         }
         (async () => {
-          treeNode.dataRef.children = await getDeptTree(treeNode.eventKey)
+          treeNode.dataRef.children = await getDeptTree(getKey(treeNode.eventKey))
           resolve();
         })()
         // state.treeData = [...state.treeData];
@@ -144,7 +147,7 @@ export default defineComponent({
       console.log('onSelect', info)
       const {node} = info
       const posLength = getPosLength(node)
-      posLength > 3 && context.emit('selected', node.eventKey.toString())
+      posLength > 3 && context.emit('selected', getKey(node.eventKey.toString()))
       context.emit('selected-node', node)
       state.selectedKeys = selectedKeys;
     }
@@ -153,7 +156,7 @@ export default defineComponent({
     const deleteRow = async (node) => {
       const pos = getPosLength(node) - 1
       if (pos == 2) {
-        const result = await policyDel({id: node.eventKey})
+        const result = await policyDel({id: getKey(node.eventKey)})
         if (result.Code == 1) {
           initData()
           message.success('删除成功')
@@ -161,7 +164,7 @@ export default defineComponent({
           message[result.type](result.message || '删除失败')
         }
       } else if (pos == 3) {
-        const result = await moduleDel({id: node.eventKey})
+        const result = await moduleDel({id: getKey(node.eventKey)})
         if (result.Code == 1) {
           initData()
           message.success('删除成功')
@@ -187,7 +190,7 @@ export default defineComponent({
       } else if (pos == 2) {
         usePolicyOperation({
           title: '加密类型',
-          id: node.eventKey,
+          id: getKey(node.eventKey),
           label: '类型名称',
           reqMethod: moduleAdd,
           callback: (res: any): void => {
@@ -202,7 +205,7 @@ export default defineComponent({
       if (pos == 2) {
         usePolicyOperation({
           title: '策略名称',
-          id: node.eventKey,
+          id: getKey(node.eventKey),
           defaultValue: node.title,
           label: '策略名称',
           reqMethod: policySet,
@@ -213,7 +216,7 @@ export default defineComponent({
       } else if (pos == 3) {
         usePolicyOperation({
           title: '加密分类',
-          id: node.eventKey,
+          id: getKey(node.eventKey),
           defaultValue: node.title,
           label: '类型名称',
           reqMethod: moduleSet,

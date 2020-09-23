@@ -1,10 +1,10 @@
 <template>
   <div class="client-info">
     <a-radio-group v-model:value="value">
-      <a-radio @click.prevent="onChange('自动审批', 0)" :value="0">
+      <a-radio @click.prevent="onChange('自动审批', 1)" :value="1">
         自动审批
       </a-radio>
-      <a-radio @click.prevent="onChange('手动审批', 1)" :value="1">
+      <a-radio @click.prevent="onChange('手动审批', 0)" :value="0">
         手动审批
       </a-radio>
     </a-radio-group>
@@ -28,7 +28,7 @@ export default defineComponent({
     const onChange = async (title, value) => {
 
       Modal.confirm({
-        title: `确定要将所有人设置为${title}吗?`,
+        title: `确定设置为${title}吗?`,
         icon: createVNode(ExclamationCircleOutlined),
         onOk: async () => {
           const result = await DeptSetapprove({deptID: attrs.deptId, value})
@@ -42,19 +42,6 @@ export default defineComponent({
               reject()
             }
           }).catch(() => console.log('Oops errors!'));
-
-          // return new Promise( (resolve, reject) => {
-          //   DeptSetapprove({deptID: attrs.deptId, value: state.value}).then(result => {
-          //     if (result.Code == 1) {
-          //       message.success('设置成功')
-          //       resolve
-          //     } else {
-          //       message[result.type](result.message || '设置失败')
-          //       reject
-          //     }
-          //   })
-          // }).catch(() => console.log('Oops errors!'));
-
         }
       })
     }

@@ -25,10 +25,12 @@ import {message, Tree} from 'ant-design-vue'
 import {defineComponent, toRefs, SetupContext, reactive, onMounted, nextTick, unref} from 'vue'
 
 import {useDeptNew} from './modals/useModals'
+import DeptNew from './modals/dept-new/dept-new.vue'
+import {useCreateModal} from "@/hooks/useCreateModal";
 import {OperateRow} from '@/components/operate-row'
 
 import {deptDel, deptTree} from '@/api/dept'
-import {useRoute, useRouter} from "vue-router";
+
 import {useEventbus} from "@/hooks/useEventbus";
 
 interface TreeItem {
@@ -165,6 +167,7 @@ export default defineComponent({
     }
     // 添加行
     const addRow = (node) => {
+      // useCreateModal(DeptNew, {fatherId: node.eventKey})
       useDeptNew({fatherId: node.eventKey})
     }
     // 编辑行

@@ -6,9 +6,19 @@
       :width="400"
       :confirm-loading="loading"
       title="设置默认用户策略"
-      ok-text="设置默认策略"
-      @ok="handleOk"
+      @ok="settingPolicy"
   >
+    <template v-slot:footer>
+      <a-button key="back" @click="visible = false">
+        取消
+      </a-button>
+      <a-button key="submit" type="primary" :loading="settingLoading" @click="settingPolicy">
+        设置默认策略
+      </a-button>
+      <a-button type="primary" :loading="applyLoading" @click="applyPolicy">
+        应用策略
+      </a-button>
+    </template>
     <a-spin :spinning="spinning">
       <div style="min-height: 150px">
         <a-checkbox-group v-model:value="checkeds">
@@ -26,8 +36,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, toRefs, inject, watch} from 'vue'
-import {userPolicylist, userSetdefaultpolicy, userGetdefaultpolicy} from '@/api/user'
+import {defineComponent, reactive, toRefs, watch} from 'vue'
+import {userPolicylist, userSetdefaultpolicy, userGetdefaultpolicy, userUsedefaultpolicy} from '@/api/user'
 import {ToolOutlined} from '@ant-design/icons-vue'
 import {Modal, Row, Col, Spin, message} from 'ant-design-vue'
 
@@ -37,7 +47,8 @@ export default defineComponent({
   setup() {
     const state = reactive({
       visible: false,
-      loading: false,
+      settingLoading: false, // 设置加载
+      applyLoading: false, // 应用加载
       spinning: true,
       checkeds: [],
       policyList: []
@@ -53,22 +64,28 @@ export default defineComponent({
       }
     })
 
-    const handleOk = async () => {
-      state.loading = true
+    // 设置默认用户策略
+    const settingPolicy = async () => {
+      state.settingLoading = true
       let sum = 0
       state.checkeds.forEach(policy => sum += ~~policy)
-      const result = await userSetdefaultpolicy({policy: sum}).finally(() => state.loading = false)
-      if (result.Code == 1) {
-        message.success('设置成功')
-      } else {
-        message[result.type](result.message || '操作失败')
-      }
+      await userSetdefaultpolicy({policy: sum}).finally(() => state.settingLoading = false)
+      state.visible = false
+    }
+
+    // 应用默认用户策略
+    const applyPolicy = async () => {
+      state.applyLoading = true
+      let sum = 0
+      state.checkeds.forEach(policy => sum += ~~policy)
+      await userUsedefaultpolicy({policy: sum}).finally(() => state.applyLoading = false)
       state.visible = false
     }
 
     return {
       ...toRefs(state),
-      handleOk
+      applyPolicy,
+      settingPolicy
     }
   }
 })

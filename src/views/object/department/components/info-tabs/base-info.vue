@@ -77,12 +77,7 @@ export default defineComponent({
     })
 
     const saveChange = async () => {
-      const res = await deptUpdate(state.form)
-      if (res.Code == 1) {
-        message.success('修改成功')
-      } else {
-        message[res.type](res.message || '修改失败')
-      }
+       await deptUpdate(state.form)
     }
 
     return {

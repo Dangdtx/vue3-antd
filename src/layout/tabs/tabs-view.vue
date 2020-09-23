@@ -250,19 +250,4 @@ export default defineComponent({
     overflow: auto;
   }
 }
-
-.zoom-fade-enter-active,
-.zoom-fade-leave-active {
-  transition: transform 0.35s, opacity 0.28s ease-in-out;
-}
-
-.zoom-fade-enter-from {
-  opacity: 0;
-  transform: scale(0.97);
-}
-
-.zoom-fade-leave-to {
-  opacity: 0;
-  transform: scale(1.03);
-}
 </style>

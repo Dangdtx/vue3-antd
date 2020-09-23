@@ -25,10 +25,10 @@
           <template v-slot:overlay>
             <a-menu>
               <a-menu-item>
-                <a @click="setApprove(record.id, 0)">部门设置自动审批</a>
+                <a @click="setApprove(record.id, 1)">部门设置自动审批</a>
               </a-menu-item>
               <a-menu-item>
-                <a @click="setApprove(record.id, 1)">部门设置手动审批</a>
+                <a @click="setApprove(record.id, 0)">部门设置手动审批</a>
               </a-menu-item>
             </a-menu>
           </template>

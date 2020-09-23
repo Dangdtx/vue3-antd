@@ -3,7 +3,11 @@
       <img src="../../assets/logo.svg" alt="">
       <h1 v-show="!collapsed">黑匣子控制中心</h1>
     </div>
-    <a-menu @click="clickMenuItem" theme="dark" mode="inline" :inlineCollapsed="false" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys"  @openChange="onOpenChange">
+    <a-menu @click="clickMenuItem" theme="dark" mode="inline"
+            :inlineCollapsed="collapsed"
+            v-model:selectedKeys="selectedKeys"
+            v-model:openKeys="openKeys"
+            @openChange="onOpenChange">
       <template v-for="group in routes">
         <a-sub-menu v-if="!group.meta.hidden" :key="group.path">
           <template v-slot:title>
@@ -11,18 +15,18 @@
             <span>{{ group.meta.title }}</span>
           </template>
           <template v-for="menu in group.children">
-            <a-sub-menu v-if="menu.meta.isGroup" :key="group.path + '/' + menu.path">
+            <a-sub-menu v-if="menu.meta.isGroup" :key="[group.path, menu.path].join('/')">
               <template v-slot:title>
                 <component :is="menu.meta?.icon"/>
                 <span class="nav-text">{{ menu.meta.title }}</span>
               </template>
               <template v-for="item in menu.children">
-                <a-menu-item v-if="!item.meta.hidden" :key="group.path + '/' + menu.path + '/' + item.path">
+                <a-menu-item v-if="!item.meta.hidden" :key="[group.path, menu.path, item.path].join('/')">
                   <span class="nav-text">{{ item.meta.title }}</span>
                 </a-menu-item>
               </template>
             </a-sub-menu>
-            <a-menu-item v-if="!menu.meta.hidden && !menu.meta.isGroup" :key="group.path + '/' + menu.path">
+            <a-menu-item v-if="!menu.meta.hidden && !menu.meta.isGroup" :key="[group.path, menu.path].join('/')">
               <component :is="menu.meta?.icon"/>
               <span class="nav-text">{{ menu.meta.title }}</span>
             </a-menu-item>
@@ -77,11 +81,13 @@ export default defineComponent({
 
     watch(() => props.collapsed, (newVal) => {
       console.log(newVal, preOpenKeys)
-      openKeys.value = newVal ? [] : unref(preOpenKeys)
+      // openKeys.value = newVal ? [] : unref(preOpenKeys)
+      openKeys.value = newVal ? [] : getOpenKeys()
+      selectedKeys.value = [route.path]
     })
 
     watch(() => route.fullPath, () => {
-      if (route.name == 'login') return
+      if (route.name == 'login' || props.collapsed) return
       openKeys.value = getOpenKeys()
       selectedKeys.value = [route.path]
     })
