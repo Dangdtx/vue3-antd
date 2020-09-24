@@ -23,6 +23,7 @@ import {defineComponent, reactive, toRefs, watch} from 'vue';
 import EditForm from './edit-form.vue'
 
 import {appBymodule, appProc} from '@/api/policy'
+import {formatOptions} from './utils'
 
 const temColumns = [
   {
@@ -71,28 +72,6 @@ export default defineComponent({
       state.loading = true
       const data = await appBymodule({id}).finally(() => state.loading = false)
         state.dataList = data
-    }
-
-    const formatOptions = (record) => {
-      const policyOptions = {
-        0: '自动加密',
-        256: '手动加密',
-        64: '使用副本加密',
-        128: '扩展名不匹配禁止加密',
-      }
-      const arr: string[] = []
-      if (0==(256&record.policysum)) {
-        arr.push(policyOptions[0])
-        if(0!=(64&record.policysum)){ // 加密副本
-          arr.push(policyOptions[64])
-        }
-      } else {
-        arr.push(policyOptions[256])
-      }
-      if(0!=(128&record.policysum)){ // 扩展名不匹配禁止加密
-        arr.push(policyOptions[128])
-      }
-      return arr.join('|')
     }
 
     watch(() => props.selectedId,  value => {

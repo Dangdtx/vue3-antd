@@ -1,4 +1,6 @@
-import {RouteRecordRaw, RouterView} from 'vue-router'
+import {RouteRecordRaw} from 'vue-router'
+import {RouterTransition} from '@/components/transition'
+import {h} from 'vue'
 
 const routeName = 'object'
 
@@ -6,7 +8,7 @@ const routes: Array<RouteRecordRaw> = [{
     path: '/object',
     name: routeName,
     redirect: '/object/terminal',
-    component: RouterView,
+    component: () => h(RouterTransition, {notNeedKey: true}),
     meta: {
         title: '对象管理',
         icon: 'ApartmentOutlined'
@@ -19,7 +21,7 @@ const routes: Array<RouteRecordRaw> = [{
                 title: '终端管理',
                 icon: 'DesktopOutlined'
             },
-            component: () => import('@/views/object/terminal/index.vue'),
+            component: () => RouterTransition,
             children: [
                 {
                     path: '',
@@ -50,7 +52,7 @@ const routes: Array<RouteRecordRaw> = [{
                 title: '部门管理',
                 icon: 'HomeOutlined'
             },
-            component: () => import('@/views/object/department/index.vue'),
+            component: () => RouterTransition,
             children: [
                 {
                     path: '',
@@ -81,7 +83,7 @@ const routes: Array<RouteRecordRaw> = [{
                 title: '角色管理',
                 icon: 'UserOutlined'
             },
-            component: () => import('@/views/object/role/index.vue'),
+            component: () => RouterTransition,
             children: [
                 {
                     path: '',

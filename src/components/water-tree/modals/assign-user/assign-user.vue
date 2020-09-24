@@ -40,12 +40,12 @@
             </a-table>
           </a-checkbox-group>
         </div>
-        <dvi class="btn-row">
+        <div class="btn-row">
           <a-button @click="handleSubmit" type="primary">
             确定
           </a-button>
           <a-button @click="modalVisible = false">取消</a-button>
-        </dvi>
+        </div>
       </div>
     </a-modal>
   </div>

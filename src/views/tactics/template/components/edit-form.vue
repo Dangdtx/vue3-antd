@@ -11,24 +11,7 @@
           加密选项
         </a-divider>
         <a-form-item label="加密方式">
-          <a-radio-group v-model:value="form.type" name="type">
-            <a-radio value="0">
-              自动加密
-            </a-radio>
-            <a-radio value="256">
-              手动加密
-            </a-radio>
-          </a-radio-group>
-        </a-form-item>
-        <a-form-item :colon="false" label="  ">
-          <a-checkbox-group v-model:value="form.checks" name="checks">
-            <a-checkbox value="128">
-              扩展名不匹配禁止加密
-            </a-checkbox>
-            <a-checkbox :disabled="form.type == 256" value="64">
-              使用加密副本
-            </a-checkbox>
-          </a-checkbox-group>
+          <encryption-way v-model:sum="sum" v-model:checked="checked" :policysum="form.policysum" />
         </a-form-item>
         <a-divider orientation="left">
           进程属性
@@ -37,8 +20,8 @@
           <a-textarea v-model:value="form.processname" placeholder="进程名称">
           </a-textarea>
         </a-form-item>
-        <a-form-item :label="form.checks.includes('128') ? '加密副本' : '扩展名'">
-          <a-textarea v-model:value="form.externname" placeholder="扩展名">
+        <a-form-item :label="checked.includes('128') ? '扩展名' : '加密副本'">
+          <a-textarea v-model:value="form.externname" :placeholder="checked.includes('128') ? '扩展名' : '加密副本'">
           </a-textarea>
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 19, offset: 5 }">
@@ -67,6 +50,7 @@ import {defineComponent, reactive, toRefs, watch, createVNode} from 'vue'
 import {Divider, message, Modal, Breadcrumb, Spin} from 'ant-design-vue'
 import {appDel, appAdd, appSet, appProc} from '@/api/policy'
 import {ExclamationCircleOutlined} from '@ant-design/icons-vue'
+import {EncryptionWay} from '@/components/encryption-way'
 
 interface FormProps {
   processid: string | number;
@@ -77,7 +61,7 @@ interface FormProps {
 export default defineComponent({
   name: "edit-form",
   components: {
-    ADivider: Divider, [Breadcrumb.name]: Breadcrumb, [Breadcrumb.Item.name]: Breadcrumb.Item, [Spin.name]: Spin
+    EncryptionWay,ADivider: Divider, [Breadcrumb.name]: Breadcrumb, [Breadcrumb.Item.name]: Breadcrumb.Item, [Spin.name]: Spin
   },
   props: {
     processid: {
@@ -96,13 +80,13 @@ export default defineComponent({
   setup(props: FormProps, {emit}) {
     const state = reactive({
       spinning: false, // 加载状态
+      sum: 0, // 加密方式计算值
+      checked: [], // 勾选的类型
       selectedNames: {
         type: '',
         name: ''
       },
       form: {
-        type: '',
-        checks: [] as string[],
         applicationid: '',
         externname: "",
         policytype: "",
@@ -129,18 +113,7 @@ export default defineComponent({
         ...state.form,
         ...data
       }
-      state.form.type = ''
       state.form.processid = processid
-      state.form.checks = []
-      state.form.type = (256 & state.form.policysum) == 0 ? '0' : '256'
-      if (state.form.type == '0') { // 自动加密
-        if (0 != (64 & state.form.policysum)) { // 加密副本
-          !state.form.checks.includes('64') && state.form.checks.push('64')
-        }
-      }
-      if (0 != (128 & state.form.policysum)) { // 扩展名不匹配禁止加密
-        !state.form.checks.includes('128') && state.form.checks.push('128')
-      }
     }
 
     watch(() => props.selectedNames, (names: any) => {
@@ -174,22 +147,13 @@ export default defineComponent({
 
     // 添加
     const handleSubmit = async () => {
-      const {processid, processname, externname, applicationid, checks, type} = state.form
-
-      const index = checks.findIndex((item: string)  => item == '64')
-      // 自动加密并且没有勾选加密副本
-      if(index == -1 && type == '0') {
-        checks.push('3')
-      }
-      if (type == '256' && index != -1) {
-        checks.splice(index, 1)
-      }
+      const {processid, processname, externname, applicationid} = state.form
 
       const params = {
         id: applicationid,
         'processname': processname,
         'extension': externname,
-        'sum': checks.reduce((acc, curr) => ~~acc + ~~curr, ~~type)
+        'sum': state.sum
       }
       const res = await appAdd(params)
       if (res.Code == 1) {
@@ -203,20 +167,13 @@ export default defineComponent({
 
     // 修改
     const setAppPolicy = async () => {
-      const {processid, processname, externname, checks, type} = state.form
-      const index = checks.findIndex((item: string)  => item == '64')
-      // 自动加密并且没有勾选加密副本
-      if(index == -1 && type == '0') {
-        checks.push('3')
-      }
-      if (type == '256' && index != -1) {
-        checks.splice(index, 1)
-      }
+      const {processid, processname, externname} = state.form
+
       const params = {
         'id': processid,
         'processname': processname,
         'extension': externname,
-        'sum': checks.reduce((acc, curr) => ~~acc + ~~curr, ~~type)
+        'sum': state.sum
       }
       const res = await appSet(params)
       if (res.Code == 1) {

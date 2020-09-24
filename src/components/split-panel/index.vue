@@ -78,6 +78,7 @@ export default defineComponent({
     width: 240px;
     max-width: 50vw;
     .left-content {
+      height: 100%;
       padding: 20px;
     }
     .separator {

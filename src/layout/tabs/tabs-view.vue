@@ -75,11 +75,7 @@
       </template>
     </a-tabs>
     <div class="tabs-view-content">
-      <router-view v-slot="{ Component }">
-        <transition name="zoom-fade" mode="out-in">
-          <component :is="Component"/>
-        </transition>
-      </router-view>
+      <router-transition :not-need-key="true" />
     </div>
   </div>
 </template>
@@ -88,6 +84,7 @@
 import {defineComponent, reactive, nextTick, toRefs, unref, watch} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import components from "@/layout/tabs/components";
+import {RouterTransition} from '@/components/transition'
 
 import {message} from 'ant-design-vue'
 
@@ -104,7 +101,7 @@ interface RouteItem {
 export default defineComponent({
   name: "tabs-view",
   components: {
-    ...components
+    ...components, RouterTransition
   },
   setup() {
     const route = useRoute()

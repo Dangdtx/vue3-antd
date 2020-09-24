@@ -1,4 +1,5 @@
-import {RouteRecordRaw, RouterView} from 'vue-router'
+import {RouteRecordRaw} from 'vue-router'
+import {RouterTransition} from '@/components/transition'
 
 const routeName = 'system'
 
@@ -7,7 +8,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/system',
         name: routeName,
         redirect: '/system/watermark',
-        component: RouterView,
+        component: () => RouterTransition,
         meta: {
             title: '系统管理',
             icon: 'SettingOutlined'
@@ -21,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
                     icon: 'FileProtectOutlined',
                     isGroup: true,
                 },
-                component: () => import('@/views/system/watermark/index.vue'),
+                component: () => RouterTransition,
                 children: [
                     {
                         path: 'filemark',

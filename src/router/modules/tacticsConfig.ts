@@ -1,4 +1,5 @@
-import {RouteRecordRaw, RouterView} from 'vue-router'
+import {RouteRecordRaw} from 'vue-router'
+import {RouterTransition} from '@/components/transition'
 
 const routeName = 'tactics'
 
@@ -6,7 +7,7 @@ const routes: Array<RouteRecordRaw> = [{
     path: '/tactics',
     name: routeName,
     redirect: '/tactics/template',
-    component: RouterView,
+    component: () => RouterTransition,
     meta: {
         title: '策略配置',
         icon: 'EditOutlined'
