@@ -57,8 +57,6 @@ export default defineComponent({
   setup(props, context: SetupContext) {
     //事件主线
     const {refreshTree} = useEventbus()
-    const route = useRoute()
-    const router = useRouter()
 
     const state = reactive({
       expandedKeys: [props.rootTreeOption.key],

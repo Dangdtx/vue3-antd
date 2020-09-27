@@ -14,7 +14,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/',
         name: 'Layout',
         redirect: '/object/terminal',
-        component: require('@/layout/index.vue').default,
+        component: () => import(/* webpackChunkName: "layout" */ '@/layout/index.vue'),
         meta: {
           title: '首页'
         },
@@ -23,7 +23,7 @@ const routes: Array<RouteRecordRaw> = [
     {
        path: '/login',
        name: 'login',
-       component: require('@/views/login/index.vue').default
+       component: () => import(/* webpackChunkName: "login" */ '@/views/login/index.vue')
     },
     {
         path: '/:catchAll(.*)',

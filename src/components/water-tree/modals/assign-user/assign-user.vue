@@ -3,7 +3,7 @@
     <a-modal
         v-model:visible="modalVisible"
         :title="'添加组用户' + (treeTitle ? `(${treeTitle})` : '')"
-        :width="720"
+        :width="850"
         dialogClass="assign-user-modal"
         centered
         destroyOnClose

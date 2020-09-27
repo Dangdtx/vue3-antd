@@ -2,7 +2,7 @@
   <div ref="rootEl">
     <a-modal
         v-model:visible="modalVisible"
-        title="用户组信息"
+        :title="title"
         centered
         destroyOnClose
         :footer="null"
@@ -48,11 +48,15 @@ export default defineComponent({
     AModal, AInput: Input, AForm, AFormItem: AForm.Item, AButton, ASpace
   },
   props: {
+    title: {
+      type: String,
+      default: '添加用户组'
+    },
     fatherId: {
       type: String
     }
   },
-  setup(props: ModalProps) {
+  setup(props) {
     const {toRefreshTree, toRefreshTable} = useEventbus()
     const state = reactive({
       modalVisible: true,

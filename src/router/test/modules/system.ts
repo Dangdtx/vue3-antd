@@ -32,7 +32,7 @@ const routes: Array<RouteRecordRaw> = [
                             icon: 'DesktopOutlined',
                             watermarkType: 'filemark'
                         },
-                        component: require('@/views/system/watermark/watermark.vue').default
+                        component: () => import(/* webpackChunkName: "system-watermark" */ '@/views/system/watermark/watermark.vue')
                     },
                     {
                         path: 'docmark',
@@ -42,7 +42,7 @@ const routes: Array<RouteRecordRaw> = [
                             icon: 'DesktopOutlined',
                             watermarkType: 'docmark'
                         },
-                        component: require('@/views/system/watermark/watermark.vue').default
+                        component: () => import(/* webpackChunkName: "system-watermark" */ '@/views/system/watermark/watermark.vue')
                     }
                 ]
             },
@@ -53,7 +53,7 @@ const routes: Array<RouteRecordRaw> = [
                     title: '系统配置',
                     icon: 'ToolOutlined',
                 },
-                component: require('@/views/system/config/index.vue').default
+                component: () => import(/* webpackChunkName: "system-config" */ '@/views/system/config/index.vue')
             }
         ]
     }

@@ -13,7 +13,7 @@
         取消
       </a-button>
       <a-button key="submit" type="primary" :loading="settingLoading" @click="settingPolicy">
-        设置默认策略
+        保存
       </a-button>
       <a-button type="primary" :loading="applyLoading" @click="applyPolicy">
         应用策略

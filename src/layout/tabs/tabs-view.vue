@@ -127,12 +127,6 @@ export default defineComponent({
       activeKey: route.fullPath,
     })
 
-    // 保存页面
-    const savePageList = () => {
-      console.count('你执行了多少次')
-      nextTick(() => localStorage.setItem('routes', JSON.stringify(state.pageList)))
-    }
-
     const whiteList = ['Redirect', 'login']
 
     watch(() => route.fullPath, (to, from) => {
@@ -143,7 +137,10 @@ export default defineComponent({
       }
     }, {immediate: true})
 
-    watch(() => state.pageList, savePageList, {deep: true})
+    // 在页面关闭或刷新之前，保存数据
+    window.addEventListener('beforeunload', () => {
+      localStorage.setItem('routes', JSON.stringify(state.pageList))
+    })
 
     // 关闭页面
     const removeTab = (targetKey) => {

@@ -245,7 +245,7 @@ export default defineComponent({
   background: #000;
   color: white;
   overflow: hidden;
-  z-index: 9999999;
+  z-index: 9999;
 
   &.unLockLogin {
     background-color: rgba(25, 28, 34, 0.88);

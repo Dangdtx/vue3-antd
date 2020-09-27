@@ -30,7 +30,7 @@ const routes: Array<RouteRecordRaw> = [{
                         title: '终端列表',
                         icon: 'HomeOutlined'
                     },
-                    component: require('@/views/object/terminal/list.vue').default
+                    component: () => import(/* webpackChunkName: "object-terminal-list" */ '@/views/object/terminal/list.vue')
                 },
                 {
                     path: ':pid',
@@ -41,7 +41,7 @@ const routes: Array<RouteRecordRaw> = [{
                         icon: 'HomeOutlined',
                         hidden: true,
                     },
-                    component: require('@/views/object/terminal/info.vue').default
+                    component: () => import(/* webpackChunkName: "object-terminal-info" */ '@/views/object/terminal/info.vue')
                 },
             ]
         },
@@ -61,7 +61,7 @@ const routes: Array<RouteRecordRaw> = [{
                         title: '部门列表',
                         icon: 'HomeOutlined'
                     },
-                    component: require('@/views/object/department/list.vue').default
+                    component: () => import(/* webpackChunkName: "object-department-list" */ '@/views/object/department/list.vue')
                 },
                 {
                     path: ':deptId',
@@ -72,7 +72,7 @@ const routes: Array<RouteRecordRaw> = [{
                         hidden: true,
                         icon: 'HomeOutlined'
                     },
-                    component: require('@/views/object/department/info.vue').default
+                    component: () => import(/* webpackChunkName: "object-department-info" */ '@/views/object/department/info.vue')
                 },
             ]
         },
@@ -92,7 +92,7 @@ const routes: Array<RouteRecordRaw> = [{
                         title: '角色列表',
                         icon: 'HomeOutlined'
                     },
-                    component: require('@/views/object/role/list.vue').default
+                    component: () => import(/* webpackChunkName: "object-role-list" */ '@/views/object/role/list.vue')
                 },
                 {
                     path: ':uid',
@@ -103,7 +103,7 @@ const routes: Array<RouteRecordRaw> = [{
                         hidden: true,
                         icon: 'HomeOutlined'
                     },
-                    component: require('@/components/user/index.vue').default
+                    component: () => import(/* webpackChunkName: "object-role-user" */ '@/components/user/index.vue')
                 },
             ]
         }

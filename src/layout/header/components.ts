@@ -1,6 +1,14 @@
 import {Layout, Avatar, Menu, Dropdown, Breadcrumb} from 'ant-design-vue'
 
-import {SettingOutlined, SearchOutlined,MenuFoldOutlined, MenuUnfoldOutlined} from '@ant-design/icons-vue';
+import {
+    SettingOutlined,
+    SearchOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    FullscreenOutlined,
+    FullscreenExitOutlined,
+    PoweroffOutlined
+} from '@ant-design/icons-vue';
 
 export default {
     [Layout.Header.name]: Layout.Header,
@@ -12,5 +20,6 @@ export default {
     SearchOutlined,
     [Breadcrumb.name]: Breadcrumb,
     [Breadcrumb.Item.name]: Breadcrumb.Item,
-    MenuFoldOutlined, MenuUnfoldOutlined
+    MenuFoldOutlined, MenuUnfoldOutlined, FullscreenOutlined, FullscreenExitOutlined,
+    PoweroffOutlined
 }

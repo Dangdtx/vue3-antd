@@ -31,7 +31,7 @@ const transform: AxiosTransform = {
         //  这里 code，result，message为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
         const {Code: code, result, message} = data;
 
-        checkStatus(code,message)
+         if (code == -101) return checkStatus(code,message)
 
         // 是否显示自定义信息提示
         if (isShowMessage) {
@@ -104,8 +104,9 @@ const transform: AxiosTransform = {
 
         if (apiUrl && isString(apiUrl)) {
             config.url = isDev ? `/api${config.url}` : `${apiUrl}${config.url}`;
-            // config.url = `${config.url}`
+            // config.url = `/api${config.url}`
         }
+
         if (config.method === RequestEnum.GET) {
             const now = new Date().getTime();
             if (!isString(config.params)) {
@@ -204,7 +205,7 @@ const axios = new VAxios({
         // 消息提示类型
         errorMessageMode: 'none',
         // 接口地址
-        apiUrl: window.baseUrl,
+        apiUrl: isDev ? process.env.BASE_URL : window.baseUrl,
     },
     withCredentials: true
 });

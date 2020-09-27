@@ -1,5 +1,9 @@
 'use strict'
 
+// "electron": "^9.3.1",
+// "electron-devtools-installer": "^3.1.0",
+// "vue-cli-plugin-electron-builder": "~2.0.0-rc.4"
+
 import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'

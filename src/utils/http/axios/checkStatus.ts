@@ -6,6 +6,7 @@ const error = Message.error!;
 export function checkStatus(status: number, msg: string): void {
     switch (status) {
         case -101:
+            if (router.currentRoute.value.name == 'login') return
             router.replace({
                 name: 'login',
                 query: {

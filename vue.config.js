@@ -6,10 +6,14 @@ const UglifyJsPlugin = require('terser-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const path = require('path')
 const resolve = dir => path.join(__dirname, dir) // 路径
+const querystring = require('querystring');
 
 const isDev = process.env.NODE_ENV === 'development'
 
 module.exports = {
+    // publicPath: isDev ? '' : querystring.unescape('<%=request.getContextPath()%>'),
+    publicPath: '',
+    filenameHashing: false,
     productionSourceMap: isDev,
     css: {
         requireModuleExtension: true, // 是否开启CSSmodule并保留xxx.module.css后缀
@@ -42,6 +46,23 @@ module.exports = {
                 args[0].title = '黑匣子管理系统'
                 return args
             })
+
+        // svg rule loader
+        config.module
+            .rule('svg')
+            .exclude.add(resolve('src/assets/icons'))
+            .end();
+
+        config.module
+            .rule('icons')
+            .test(/\.svg$/)
+            .include.add(resolve('src/assets/icons'))
+            .end()
+            .use('svg-sprite-loader')
+            .loader('svg-sprite-loader')
+            .options({
+                symbolId: 'icon-[name]'
+            });
     },
     configureWebpack: config => {
         if (!isDev) {

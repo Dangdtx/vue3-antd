@@ -2,8 +2,7 @@
   <ALayoutHeader class="layout-header">
     <div class="left-options">
       <span @click="() => $emit('update:collapsed', !collapsed)" class="menu-fold">
-            <menu-unfold-outlined v-if="collapsed"/>
-            <menu-fold-outlined v-else/>
+        <component :is="collapsed ? 'menu-unfold-outlined' : 'menu-fold-outlined'" />
     </span>
       <a-breadcrumb>
         <a-breadcrumb-item v-for="routeItem in route.matched" :key="routeItem.name">
@@ -23,18 +22,22 @@
       </a-breadcrumb>
     </div>
     <div class="right-options">
-      <SettingOutlined/>
-      <SearchOutlined/>
+<!--      网站设置-->
+<!--      <SettingOutlined/>-->
+<!--      搜索-->
+<!--      <SearchOutlined/>-->
+<!--      切换全屏-->
+      <component :is="fullscreenIcon" @click="toggleFullScreen" />
       <Dropdown>
         <a-avatar>{{ username }}</a-avatar>
         <template v-slot:overlay>
           <a-menu>
+<!--            <a-menu-item>-->
+<!--              <a href="javascript:;">个人中心</a>-->
+<!--            </a-menu-item>-->
+<!--            <a-menu-divider/>-->
             <a-menu-item>
-              <a href="javascript:;">个人中心</a>
-            </a-menu-item>
-            <a-menu-divider/>
-            <a-menu-item>
-              <a @click.prevent="doLogout">退出登录</a>
+              <a @click.prevent="doLogout"><poweroff-outlined /> 退出登录</a>
             </a-menu-item>
           </a-menu>
         </template>
@@ -44,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue'
+import {defineComponent, reactive, toRefs} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import components from "@/layout/header/components";
 import {logout} from "@/api/sys/user";
@@ -58,7 +61,10 @@ export default defineComponent({
     }
   },
   setup() {
-    const username = ref(localStorage.getItem('username') || '')
+    const state = reactive({
+      username: localStorage.getItem('username') || '',
+      fullscreenIcon: 'FullscreenOutlined'
+    })
 
     const router = useRouter()
     const route = useRoute()
@@ -76,9 +82,27 @@ export default defineComponent({
       })
     }
 
+    // 切换全屏图标
+    const toggleFullscreenIcon = () => (state.fullscreenIcon = document.fullscreenElement !== null ? 'FullscreenExitOutlined' : 'FullscreenOutlined')
+
+    // 监听全屏切换事件
+    document.addEventListener("fullscreenchange", toggleFullscreenIcon)
+
+    // 全屏切换
+    const toggleFullScreen = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
     return {
+      ...toRefs(state),
+      toggleFullScreen,
       doLogout,
-      username,
       route
     }
   }

@@ -5,6 +5,7 @@
         v-model:expanded-keys="expandedKeys"
         :auto-expand-parent="autoExpandParent"
         :tree-data="treeData"
+        :loadedKeys="loadedKeys"
         :load-data="onLoadData"
         @expand="onExpand"
         @select="onSelect"
@@ -25,7 +26,7 @@
 
 <script lang="ts">
 import {message, Tree} from 'ant-design-vue'
-import {defineComponent, toRefs, SetupContext, reactive, onMounted} from 'vue'
+import {defineComponent, toRefs, SetupContext, reactive, onMounted, nextTick} from 'vue'
 import {OperateRow} from '@/components/operate-row'
 
 import {usePolicyOperation} from "@/views/tactics/template/modals/useModals"
@@ -58,7 +59,7 @@ export default defineComponent({
       expandedKeys: ['0'],
       autoExpandParent: true,
       selectedKeys: [] as string[] | number[],
-
+      loadedKeys: [],
       treeData: [
         {
           title: '策略配置',
@@ -92,20 +93,18 @@ export default defineComponent({
     // 获取策略树
     const getPolicyTree = async () => {
       const data = await policyAll({})
-      const children = state.treeData[0].children = data.map(item => {
+      state.treeData[0].children = data.map(item => {
         return {
           title: item.classname,
           key: 'classid-' + item.classid,
           scopedSlots: {title: 'title'},
-          children: [],
           ...item
         } as TreeItem
       })
 
-      for (const item of children) {
-        item.children = await getDeptTree(item.key)
-      }
-      state.autoExpandParent = true
+      // for (const item of children) {
+      //   item.children = await getDeptTree(item.key)
+      // }
     }
 
     // 加载树节点
@@ -113,6 +112,7 @@ export default defineComponent({
       console.log(treeNode, '节点')
       return new Promise(resolve => {
         if (treeNode.dataRef.children) {
+          treeNode.dataRef.isLeaf = true
           resolve();
           return;
         }
@@ -163,7 +163,7 @@ export default defineComponent({
         } else {
           message[result.type](result.message || '删除失败')
         }
-      } else if (pos == 3) {
+      } else if (pos >= 3) {
         const result = await moduleDel({id: getKey(node.eventKey)})
         if (result.Code == 1) {
           initData()

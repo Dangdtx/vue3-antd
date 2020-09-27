@@ -16,6 +16,7 @@ enum Api {
     AppByModule = '/app/bymodule',
     DeptChangeprocess = '/dept/changeprocess',
     DeptSetapprove = '/dept/setapprove', // 设置审批
+    deptRefresh = '/dept/refresh', // 刷新后台数据
 }
 
 /**
@@ -218,6 +219,20 @@ export function deptIdMemberList(params: any, deptId) {
         url: `/dept/d${deptId}/memberlist`,
         method: 'POST',
         params,
+    });
+}
+/**
+ * @description: 刷新数据
+ */
+export function deptRefresh(params: any) {
+    return http.request({
+        url: Api.deptRefresh,
+        method: 'POST',
+        params,
+    }, {
+        successMessageText: '刷新成功',
+        errorMessageText: '刷新失败',
+        isShowMessage: true
     });
 }
 /**

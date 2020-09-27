@@ -23,7 +23,6 @@
 <script lang="ts">
 import {message, Tree} from 'ant-design-vue'
 import {defineComponent, toRefs, SetupContext, reactive, onMounted, nextTick, unref} from 'vue'
-
 import {useDeptNew} from './modals/useModals'
 import DeptNew from './modals/dept-new/dept-new.vue'
 import {useCreateModal} from "@/hooks/useCreateModal";
@@ -98,12 +97,12 @@ export default defineComponent({
 
     // 初始化树
     const initDeptTree = async () => {
-      state.loadedKeys = []
+      // state.loadedKeys = []
       state.treeData[0].children = await getDeptTree(state.treeData[0].key)
-      state.expandedKeys = [props.rootTreeOption.key]
-      state.autoExpandParent = false
-      state.checkedKeys = []
-      state.selectedKeys = [props.rootTreeOption.key]
+      // state.expandedKeys = [props.rootTreeOption.key]
+      // state.autoExpandParent = false
+      // state.checkedKeys = []
+      // state.selectedKeys = [props.rootTreeOption.key]
     }
 
     onMounted(() => {
