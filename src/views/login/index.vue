@@ -1,5 +1,5 @@
 <template>
-  <div :style="{'--bg-url': logo}" class="login-box">
+  <div class="login-box">
     <div class="login-logo">
       <svg-icon icon-class="logo" />
       <h1>黑匣子控制中心</h1>
@@ -48,7 +48,6 @@ export default defineComponent({
   setup() {
     const state = reactive({
       loading: false,
-      logo: `url(data:image/svg+xml,${require('@/assets/icons/logo.svg').default})`,
       formInline: {
         user: '',
         password: '',
@@ -57,12 +56,6 @@ export default defineComponent({
 
     const router = useRouter()
     const route = useRoute()
-
-    onMounted(() => {
-      const login = document.querySelector('.login-box') as HTMLDivElement
-      login.style.setProperty('--bg-url', state.logo.slice(0, 50) || '')
-      console.log(login.dataset)
-    })
 
     const handleSubmit = async () => {
       const {user, password} = state.formInline
@@ -108,8 +101,7 @@ export default defineComponent({
   padding-top: 240px;
   flex-direction: column;
   align-items: center;
-  background: var(--bg-url);
-  background: url("~@/assets/icons/login.svg");
+  background: url("~@/assets/login.svg");
   background-size: 100%;
 
   .login-logo {
