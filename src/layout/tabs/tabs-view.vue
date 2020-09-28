@@ -75,7 +75,7 @@
       </template>
     </a-tabs>
     <div class="tabs-view-content">
-      <router-transition :not-need-key="true" />
+      <router-transition :not-need-key="true" :animate="false" />
     </div>
   </div>
 </template>

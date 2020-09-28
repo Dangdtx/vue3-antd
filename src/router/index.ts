@@ -4,10 +4,10 @@ import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 import NProgress from 'nprogress' // 进度条
 import 'nprogress/nprogress.css' // 进度条样式
 
-import objectManage from './test/modules/objectManage'
-import tacticsConfig from './test/modules/tacticsConfig'
-import system from './test/modules/system'
-import redirect from './test/modules/redirect'
+import objectManage from './modules/objectManage'
+import tacticsConfig from './modules/tacticsConfig'
+import system from './modules/system'
+import redirect from './modules/redirect'
 
 const routes: Array<RouteRecordRaw> = [
     {

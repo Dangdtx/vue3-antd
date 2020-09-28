@@ -15,7 +15,7 @@ import {setObjToUrlParams} from '@/utils/urlUtils'
 import {RequestOptions, Result} from './types';
 
 const isDev = process.env.NODE_ENV === 'development'
-import router from  '@/router'
+import router from '@/router'
 
 /**
  * @description: 数据处理，方便区分多种处理方式
@@ -31,7 +31,7 @@ const transform: AxiosTransform = {
         //  这里 code，result，message为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
         const {Code: code, result, message} = data;
 
-         if (code == -101) return checkStatus(code,message)
+        if (code == -101) return checkStatus(code, message)
 
         // 是否显示自定义信息提示
         if (isShowMessage) {
@@ -102,10 +102,7 @@ const transform: AxiosTransform = {
     beforeRequestHook: (config, options) => {
         const {apiUrl, joinPrefix, joinParamsToUrl, formatDate, isParseToJson} = options;
 
-        if (apiUrl && isString(apiUrl)) {
-            config.url = isDev ? `/api${config.url}` : `${apiUrl}${config.url}`;
-            // config.url = `/api${config.url}`
-        }
+        config.url = isDev ? `/api${config.url}` : `${apiUrl || ''}${config.url}`;
 
         if (config.method === RequestEnum.GET) {
             const now = new Date().getTime();
@@ -205,7 +202,7 @@ const axios = new VAxios({
         // 消息提示类型
         errorMessageMode: 'none',
         // 接口地址
-        apiUrl: isDev ? process.env.BASE_URL : window.baseUrl,
+        apiUrl: isDev ? process.env.BASE_URL : window.baseUrl.endsWith('/') ? window.baseUrl.slice(-1) : window.baseUrl,
     },
     withCredentials: true
 });

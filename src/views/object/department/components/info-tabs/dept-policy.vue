@@ -1,7 +1,7 @@
 <template>
   <split-panel style="height: calc(100vh - 298px);">
     <template v-slot:left-content>
-      <a-spin :spinning="treeIsLoad" tip="加载中">
+      <a-spin style="height: 280px" :spinning="treeIsLoad" tip="加载中">
         <a-tree
             v-model:checkedKeys="checkedKeys"
             checkable
@@ -314,5 +314,8 @@ export default defineComponent({
 <style lang="scss" scoped>
 ::v-deep(.click) > td {
   background-color: #e6f7ff;
+}
+::v-deep(.left-content) {
+  padding-left: 0!important;
 }
 </style>

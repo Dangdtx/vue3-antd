@@ -4,7 +4,7 @@
       v-model:visible="visible"
       centered
       :width="400"
-      :confirm-loading="loading"
+      :confirm-loading="settingLoading"
       title="设置默认用户策略"
       @ok="settingPolicy"
   >

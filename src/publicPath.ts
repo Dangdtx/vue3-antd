@@ -1,5 +1,2 @@
 // 动态设置资源路径
-
-// window.baseUrl = 'http://localhost:8081/www/eee/'
-//
-__webpack_public_path__ = window.baseUrl
+__webpack_public_path__ = process.env.NODE_ENV == 'development' ? '' : window.baseUrl

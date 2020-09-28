@@ -20,7 +20,7 @@ const routes: Array<RouteRecordRaw> = [{
                 title: '策略模板',
                 icon: 'UserOutlined'
             },
-            component: require('@/views/tactics/template/index.vue').default
+            component: () => import(/* webpackChunkName: "tactics-template" */ '@/views/tactics/template/index.vue')
         }
     ]
 }]

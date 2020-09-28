@@ -10,6 +10,7 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
     <script>
         window.baseUrl = 'http://localhost:8081/www/eee/'
+        window.baseUrl = window.baseUrl.endsWith('/') ? window.baseUrl : window.baseUrl + '/'
     </script>
 </head>
 <body>

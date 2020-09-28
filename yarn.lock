@@ -2,6 +2,16 @@
 # yarn lockfile v1
 
 
+"@ant-design-vue/use@^0.0.1-0":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npm.taobao.org/@ant-design-vue/use/download/@ant-design-vue/use-0.0.1-alpha.6.tgz#eafce73abcc7d2736dcbfff1e396c69b84b9e840"
+  integrity sha1-6vznOrzH0nNty//x45bGm4S56EA=
+  dependencies:
+    "@vue/runtime-dom" "^3.0.0-rc.1"
+    async-validator "^3.4.0"
+    lodash-es "^4.17.15"
+    resize-observer-polyfill "^1.5.1"
+
 "@ant-design/colors@^4.0.0":
   version "4.0.5"
   resolved "https://registry.npm.taobao.org/@ant-design/colors/download/@ant-design/colors-4.0.5.tgz?cache=0&sync_timestamp=1596611425139&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40ant-design%2Fcolors%2Fdownload%2F%40ant-design%2Fcolors-4.0.5.tgz#d7d100d7545cca8f624954604a6892fc48ba5aae"
@@ -1566,7 +1576,7 @@
     "@vue/reactivity" "3.0.0"
     "@vue/shared" "3.0.0"
 
-"@vue/runtime-dom@3.0.0":
+"@vue/runtime-dom@3.0.0", "@vue/runtime-dom@^3.0.0-rc.1":
   version "3.0.0"
   resolved "https://registry.npm.taobao.org/@vue/runtime-dom/download/@vue/runtime-dom-3.0.0.tgz#e0d1f7c7e22e1318696014cc3501e06b288c2e11"
   integrity sha1-4NH3x+IuExhpYBTMNQHgayiMLhE=
@@ -1870,11 +1880,12 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
     "@types/color-name" "^1.1.1"
     color-convert "^2.0.1"
 
-ant-design-vue@^2.0.0-beta.9:
-  version "2.0.0-beta.9"
-  resolved "https://registry.npm.taobao.org/ant-design-vue/download/ant-design-vue-2.0.0-beta.9.tgz?cache=0&sync_timestamp=1599549052777&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fant-design-vue%2Fdownload%2Fant-design-vue-2.0.0-beta.9.tgz#8fbc84b84e4045a0b18c803b137dc6686198334f"
-  integrity sha1-j7yEuE5ARaCxjIA7E33GaGGYM08=
+ant-design-vue@^2.0.0-beta.10:
+  version "2.0.0-beta.10"
+  resolved "https://registry.npm.taobao.org/ant-design-vue/download/ant-design-vue-2.0.0-beta.10.tgz?cache=0&sync_timestamp=1600956198509&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fant-design-vue%2Fdownload%2Fant-design-vue-2.0.0-beta.10.tgz#66ecfe029458b12d276139bd7fe27a4624af3c75"
+  integrity sha1-Zuz+ApRYsS0nYTm9f+J6RiSvPHU=
   dependencies:
+    "@ant-design-vue/use" "^0.0.1-0"
     "@ant-design/icons-vue" "^5.1.5"
     "@babel/runtime" "^7.10.5"
     "@simonwep/pickr" "~1.7.0"
@@ -2037,7 +2048,7 @@ async-limiter@~1.0.0:
   resolved "https://registry.npm.taobao.org/async-limiter/download/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
   integrity sha1-3TeelPDbgxCwgpH51kwyCXZmF/0=
 
-async-validator@^3.3.0:
+async-validator@^3.3.0, async-validator@^3.4.0:
   version "3.4.0"
   resolved "https://registry.npm.taobao.org/async-validator/download/async-validator-3.4.0.tgz?cache=0&sync_timestamp=1596623572478&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fasync-validator%2Fdownload%2Fasync-validator-3.4.0.tgz#871b3e594124bf4c4eb7bcd1a9e78b44f3b09cae"
   integrity sha1-hxs+WUEkv0xOt7zRqeeLRPOwnK4=
@@ -3846,10 +3857,10 @@ eslint-loader@^2.2.1:
     object-hash "^1.1.4"
     rimraf "^2.6.1"
 
-eslint-plugin-vue@^7.0.0-beta.3:
-  version "7.0.0-beta.3"
-  resolved "https://registry.npm.taobao.org/eslint-plugin-vue/download/eslint-plugin-vue-7.0.0-beta.3.tgz?cache=0&sync_timestamp=1598607180295&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Feslint-plugin-vue%2Fdownload%2Feslint-plugin-vue-7.0.0-beta.3.tgz#37a4fedf46db74cdb3be268390b4541eb7a810b7"
-  integrity sha1-N6T+30bbdM2zviaDkLRUHreoELc=
+eslint-plugin-vue@^7.0.0-beta.4:
+  version "7.0.0-beta.4"
+  resolved "https://registry.npm.taobao.org/eslint-plugin-vue/download/eslint-plugin-vue-7.0.0-beta.4.tgz?cache=0&sync_timestamp=1600834523329&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Feslint-plugin-vue%2Fdownload%2Feslint-plugin-vue-7.0.0-beta.4.tgz#aa13b946702c4de1b8f7c3467698185775b11fdb"
+  integrity sha1-qhO5RnAsTeG498NGdpgYV3WxH9s=
   dependencies:
     eslint-utils "^2.1.0"
     natural-compare "^1.4.0"
@@ -9213,10 +9224,10 @@ vue-loader@^15.9.2:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
-vue-router@^4.0.0-beta.11:
-  version "4.0.0-beta.11"
-  resolved "https://registry.npm.taobao.org/vue-router/download/vue-router-4.0.0-beta.11.tgz?cache=0&sync_timestamp=1600589270296&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-router%2Fdownload%2Fvue-router-4.0.0-beta.11.tgz#a236e2c4ab65cfba6c37c9e2c9d8653dc9e7c46c"
-  integrity sha1-ojbixKtlz7psN8niydhlPcnnxGw=
+vue-router@^4.0.0-beta.12:
+  version "4.0.0-beta.12"
+  resolved "https://registry.npm.taobao.org/vue-router/download/vue-router-4.0.0-beta.12.tgz?cache=0&sync_timestamp=1601131068569&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-router%2Fdownload%2Fvue-router-4.0.0-beta.12.tgz#873d1bbd16882ab2ae35973e3e691412104f3914"
+  integrity sha1-hz0bvRaIKrKuNZc+PmkUEhBPORQ=
 
 vue-style-loader@^4.1.0, vue-style-loader@^4.1.2:
   version "4.1.2"
