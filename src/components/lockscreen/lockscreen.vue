@@ -11,24 +11,9 @@
         </div>
         <h6 class="tips">由于您长时间未操作，需重新输入登录密码解锁进入系统。</h6>
       </div>
-      <div class="container">
-        <div class="number">{{ battery.level }}%</div>
-        <div class="contrast">
-          <div class="circle"></div>
-          <ul class="bubbles">
-            <li v-for="i in 15" :key="i"></li>
-          </ul>
-        </div>
-        <div class="charging">
-          <div>{{ batteryStatus }}</div>
-          <div v-show="Number.isFinite(battery.dischargingTime) && battery.dischargingTime != 0">
-            剩余可使用时间：{{ calcDischargingTime }}
-          </div>
-          <span v-show="Number.isFinite(battery.chargingTime) && battery.chargingTime != 0">
-          距离电池充满需要：{{ calcDischargingTime }}
-        </span>
-        </div>
-      </div>
+<!--      华为充电-->
+      <huawei-charge :battery="battery" :battery-status="batteryStatus" :calc-discharging-time="calcDischargingTime" />
+<!--      <xiaomi-charge :battery="battery" />-->
     </template>
     <template v-if="unLockLogin">
       <div class="login-box">
@@ -89,6 +74,8 @@ import {useTime} from '@/hooks/useTime'
 import {setIsLock} from '@/hooks/useUserStatus'
 import {login} from "@/api/sys/user";
 import md5 from 'blueimp-md5'
+import HuaweiCharge from './huawei-charge.vue'
+import XiaomiCharge from './xiaomi-charge.vue'
 
 interface Battery {
   charging: boolean; // 当前电池是否正在充电
@@ -117,7 +104,8 @@ export default defineComponent({
     ArrowRightOutlined,
     ApiOutlined,
     WifiOutlined,
-    [Avatar.name]: Avatar
+    [Avatar.name]: Avatar,
+    HuaweiCharge,XiaomiCharge
   },
   setup(props, {emit}) {
     // 获取本地时间
@@ -283,7 +271,7 @@ export default defineComponent({
 
   .lock-box {
     position: absolute;
-    top: 100px;
+    top: 12vh;
     left: 50%;
     transform: translateX(-50%);
     font-size: 34px;
@@ -315,88 +303,6 @@ export default defineComponent({
     }
   }
 
-  .container {
-    position: relative;
-    width: 300px;
-    height: 400px;
-    margin: auto;
-
-    .number {
-      position: absolute;
-      width: 300px;
-      top: 27%;
-      text-align: center;
-      font-size: 32px;
-      z-index: 10;
-      color: #fff;
-    }
-
-    .contrast {
-      filter: contrast(15) hue-rotate(0);
-      width: 300px;
-      height: 400px;
-      background-color: #000;
-      overflow: hidden;
-      animation: hueRotate 10s infinite linear;
-
-      .circle {
-        position: relative;
-        width: 300px;
-        height: 300px;
-        box-sizing: border-box;
-        filter: blur(8px);
-
-        &::after {
-          content: "";
-          position: absolute;
-          top: 40%;
-          left: 50%;
-          transform: translate(-50%, -50%) rotate(0);
-          width: 200px;
-          height: 200px;
-          background-color: #00ff6f;
-          border-radius: 42% 38% 62% 49% / 45%;
-          animation: rotate 10s infinite linear;
-        }
-
-        &::before {
-          content: "";
-          position: absolute;
-          width: 176px;
-          height: 176px;
-          top: 40%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          border-radius: 50%;
-          background-color: #000;
-          z-index: 10;
-        }
-      }
-
-      .bubbles {
-        position: absolute;
-        left: 50%;
-        bottom: 0;
-        width: 100px;
-        height: 40px;
-        transform: translate(-50%, 0);
-        border-radius: 100px 100px 0 0;
-        background-color: #00ff6f;
-        filter: blur(5px);
-
-        li {
-          position: absolute;
-          border-radius: 50%;
-          background: #00ff6f;
-        }
-      }
-    }
-
-    .charging {
-      text-align: center;
-      font-size: 20px;
-    }
-  }
 
   .local-time {
     position: absolute;
@@ -441,40 +347,4 @@ export default defineComponent({
   }
 }
 
-@for $i from 0 through 15 {
-  li:nth-child(#{$i}) {
-    $width: 15 + random(15) + px;
-    left: 15 + random(70) + px;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: $width;
-    height: $width;
-    animation: moveToTop #{random(6) + 3}s ease-in-out -#{random(5000)/1000}s infinite;
-  }
-}
-
-@keyframes rotate {
-  50% {
-    border-radius: 45% / 42% 38% 58% 49%;
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(720deg);
-  }
-}
-
-@keyframes moveToTop {
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: .1;
-    transform: translate(-50%, -180px);
-  }
-}
-
-@keyframes hueRotate {
-  100% {
-    filter: contrast(15) hue-rotate(360deg);
-  }
-}
 </style>
