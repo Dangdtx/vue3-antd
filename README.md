@@ -1,5 +1,5 @@
 # vue3-antd
-vue3.0 + ant-design-vue2.0
+基于vue3+antd的后台管理系统
 https://buqiyuan.github.io/vue3-antd/
 
 ## Project setup
