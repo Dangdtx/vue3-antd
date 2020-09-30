@@ -11,8 +11,8 @@ const querystring = require('querystring');
 const isDev = process.env.NODE_ENV === 'development'
 
 module.exports = {
-    publicPath: isDev ? '' : 'vue3-antd',
-    // publicPath: '/www/eee',
+    // publicPath: isDev ? '' : querystring.unescape('<%=request.getContextPath()%>'),
+    publicPath: '/vue3-antd',
     filenameHashing: false,
     productionSourceMap: isDev,
     css: {

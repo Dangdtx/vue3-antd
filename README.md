@@ -1,4 +1,6 @@
 # vue3-antd
+vue3.0 + ant-design-vue2.0
+https://buqiyuan.github.io/vue3-antd/
 
 ## Project setup
 ```
