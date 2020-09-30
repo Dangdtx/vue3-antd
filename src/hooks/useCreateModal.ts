@@ -23,7 +23,10 @@ export const useCreateModal = (Component: ComponentOptions, options?: any, app?:
         // 直接根据组件生成 VNode
         _instance = createVNode(Component)
         // Vue3 的 props 是扁平化的，事件直接 onMethods 即可；和 React props 类似，合并属性更轻松
-        _instance.props = mergeProps(_instance.props, options)
+        _instance.props = mergeProps(_instance.props, {
+            remove,
+            ...options
+        })
         // 渲染组件，并插入 body 之中
         render(_instance, container)
         document.body.appendChild(container)

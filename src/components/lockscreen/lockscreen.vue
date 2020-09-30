@@ -12,7 +12,7 @@
         <h6 class="tips">由于您长时间未操作，需重新输入登录密码解锁进入系统。</h6>
       </div>
 <!--      华为充电-->
-      <huawei-charge :battery="battery" :battery-status="batteryStatus" :calc-discharging-time="calcDischargingTime" />
+      <component :is="Math.random() > 0.48 ? 'xiaomi-charge' : 'huawei-charge'" :battery="battery" :battery-status="batteryStatus" :calc-discharging-time="calcDischargingTime" />
 <!--      <xiaomi-charge :battery="battery" />-->
     </template>
     <template v-if="unLockLogin">
