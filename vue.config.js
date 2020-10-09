@@ -4,6 +4,7 @@ const CompressionPlugin = require("compression-webpack-plugin")
 // 去除console
 const UglifyJsPlugin = require('terser-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin')
 const path = require('path')
 const resolve = dir => path.join(__dirname, dir) // 路径
 const querystring = require('querystring');
@@ -100,7 +101,8 @@ module.exports = {
                 // })
             )
             config.plugins.push(new LodashModuleReplacementPlugin())
-            config.plugins.push(new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/))
+            config.plugins.push(new AntdDayjsWebpackPlugin())
+            // config.plugins.push(new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/))
             // config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
 
             config.optimization = {
